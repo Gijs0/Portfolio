@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gijs van Belkom</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=DM+Mono:wght@400&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;}
+body{font-family:'Syne',sans-serif;background:#fff;color:#111;}
+@media(min-width:861px){body{overflow:hidden;}}
+
+/* ── VIEWS ── */
+/* Two full-screen layers stacked via z-index */
+#view-landing,#view-portfolio{
+  transition:opacity .6s ease;
+}
+@media(min-width:861px){
+  #view-landing,#view-portfolio{
+    position:fixed;inset:0;
+    width:100%;height:100%;
+  }
+}
+@media(max-width:860px){
+  #view-landing{
+    position:fixed;inset:0;
+    width:100%;height:100%;
+  }
+  #view-portfolio{
+    position:relative;
+    width:100%;
+    min-height:100vh;
+  }
+}
+#view-landing{z-index:20;background:#111;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+#view-landing.hidden{opacity:0;pointer-events:none;}
+
+#view-portfolio{z-index:10;background:#fff;opacity:0;pointer-events:none;overflow-y:auto;padding:52px 16px 16px;}
+#view-portfolio.visible{opacity:1;pointer-events:all;}
+@media(min-width:861px){
+  #view-portfolio{position:fixed;inset:0;width:100%;height:100%;}
+}
+
+/* ── LANDING ── */
+.l-inner{display:flex;flex-direction:column;align-items:center;user-select:none;}
+.l-label{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:#555;margin-bottom:22px;}
+.l-name{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,8vw,6rem);font-weight:300;line-height:.95;text-align:center;color:#fff;margin-bottom:22px;}
+.l-name em{font-style:italic;color:#888;}
+.l-rule{width:1px;height:36px;background:#333;margin-bottom:18px;}
+.l-role{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:#555;margin-bottom:44px;}
+.l-btn{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#fff;padding:12px 26px;border:1px solid #333;border-radius:2px;transition:border-color .2s;}
+#view-landing:hover .l-btn{border-color:#666;}
+.corner{position:absolute;width:28px;height:28px;opacity:.2;}
+.tl{top:20px;left:20px;border-top:1px solid #fff;border-left:1px solid #fff;}
+.tr{top:20px;right:20px;border-top:1px solid #fff;border-right:1px solid #fff;}
+.bl{bottom:20px;left:20px;border-bottom:1px solid #fff;border-left:1px solid #fff;}
+.br{bottom:20px;right:20px;border-bottom:1px solid #fff;border-right:1px solid #fff;}
+
+/* ── BACK BUTTON ── */
+#back-btn{
+  position:fixed;top:14px;left:14px;z-index:15;
+  display:none;align-items:center;gap:6px;
+  font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;
+  color:#999;background:#fff;border:1px solid #e8e8e8;border-radius:2px;
+  padding:7px 12px;cursor:pointer;transition:color .15s,border-color .15s;
+}
+#back-btn.show{display:flex;}
+#back-btn:hover{color:#111;border-color:#111;}
+
+/* ── PORTFOLIO ── */
+.wrapper{
+  display:flex;width:100%;max-width:1120px;margin:0 auto;
+  border:1px solid #e8e8e8;
+  height:calc(100vh - 80px);max-height:840px;
+}
+@supports(height:100dvh){
+  .wrapper{height:calc(100dvh - 80px);}
+}
+
+/* LEFT */
+.left{width:56%;height:100%;border-right:1px solid #e8e8e8;display:flex;flex-direction:column;background:#fff;}
+.p-header{padding:20px 24px 16px;flex-shrink:0;display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #e8e8e8;}
+.p-header h1{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;}
+.p-header span{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:#aaa;}
+.projects{flex:1;overflow-y:auto;}
+.projects::-webkit-scrollbar{width:2px;}
+.projects::-webkit-scrollbar-thumb{background:#eee;}
+
+.proj{display:grid;grid-template-columns:30px 1fr 16px;gap:0 10px;padding:18px 24px;border-bottom:1px solid #f0f0f0;cursor:pointer;position:relative;transition:background .15s;}
+.proj:hover{background:#fafafa;}
+.proj::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:#111;transform:scaleY(0);transform-origin:bottom;transition:transform .25s;}
+.proj:hover::before{transform:scaleY(1);}
+.proj:last-child{border-bottom:none;}
+.proj-num{font-family:'DM Mono',monospace;font-size:.54rem;color:#ccc;padding-top:3px;}
+.proj-meta{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:#aaa;margin-bottom:4px;}
+.proj-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;margin-bottom:6px;line-height:1.15;}
+.proj-desc{font-size:.69rem;color:#555;line-height:1.65;margin-bottom:9px;}
+.tags{display:flex;gap:4px;flex-wrap:wrap;}
+.tag{font-family:'DM Mono',monospace;font-size:.51rem;padding:2px 7px;border-radius:2px;color:#999;background:#f4f4f4;}
+.proj-arrow{font-size:.75rem;color:#ccc;align-self:center;transition:transform .2s,color .2s;}
+.proj:hover .proj-arrow{transform:translateX(4px);color:#111;}
+
+/* RIGHT */
+.right{width:44%;height:100%;display:flex;flex-direction:column;background:#f8f8f8;}
+.a-header{padding:20px 24px 16px;flex-shrink:0;border-bottom:1px solid #e8e8e8;background:#fff;}
+.a-header h1{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;}
+.about{flex:1;overflow-y:auto;padding:20px 24px 28px;}
+.about::-webkit-scrollbar{width:2px;}
+.about::-webkit-scrollbar-thumb{background:#eee;}
+.a-name{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;line-height:1;margin-bottom:5px;}
+.a-name em{font-style:italic;}
+.a-role{font-family:'DM Mono',monospace;font-size:.53rem;color:#aaa;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;}
+.a-bio{font-size:.71rem;color:#555;line-height:1.8;margin-bottom:20px;}
+.a-bio strong{color:#111;font-weight:600;}
+.sec{margin-bottom:20px;}
+.sec-title{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:#aaa;padding-bottom:8px;border-bottom:1px solid #e8e8e8;margin-bottom:12px;}
+
+/* SKILLS GRID */
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.skill-chip{display:flex;flex-direction:column;align-items:center;gap:6px;padding:11px 8px;background:#fff;border:1px solid #e8e8e8;border-radius:6px;font-family:'DM Mono',monospace;font-size:.51rem;color:#555;letter-spacing:.03em;transition:border-color .15s,transform .15s,box-shadow .15s;}
+.skill-chip:hover{border-color:#111;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.07);}
+.skill-chip svg{width:24px;height:24px;}
+
+/* CONTACT */
+.contact-links{display:flex;gap:7px;flex-wrap:wrap;}
+.contact-btn{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:.55rem;padding:7px 11px;border:1px solid #e8e8e8;border-radius:2px;color:#555;text-decoration:none;background:#fff;transition:border-color .15s,color .15s;}
+.contact-btn:hover{border-color:#111;color:#111;}
+
+/* ── OVERLAY ── */
+#overlay{position:fixed;inset:0;z-index:30;background:#fff;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .3s;overflow-y:auto;}
+#overlay.open{opacity:1;pointer-events:all;}
+.ov-head{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid #e8e8e8;flex-shrink:0;gap:12px;}
+.ov-back{font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:#aaa;cursor:pointer;border:none;background:none;padding:0;transition:color .15s;}
+.ov-back:hover{color:#111;}
+.ov-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.ov-num{font-family:'DM Mono',monospace;font-size:.54rem;color:#ccc;}
+.demo-btn{font-family:'Syne',sans-serif;font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:#111;border:1px solid #111;padding:7px 16px;border-radius:2px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;white-space:nowrap;}
+.demo-btn:hover{background:#333;border-color:#333;}
+.demo-btn.active{background:#fff;color:#111;border-color:#e8e8e8;}
+.demo-btn.active:hover{background:#f4f4f4;}
+.ov-body{flex:1;display:flex;overflow:hidden;min-height:0;}
+.ov-visual{width:55%;height:100%;border-right:1px solid #e8e8e8;background:#f8f8f8;position:relative;display:flex;align-items:center;justify-content:center;padding:36px;overflow:hidden;}
+#ov-preview{width:100%;max-width:480px;aspect-ratio:16/10;border-radius:8px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.1),0 4px 16px rgba(0,0,0,.06);border:1px solid #e8e8e8;}
+#ov-preview svg{width:100%;height:100%;display:block;}
+#ov-demo{display:none;position:absolute;inset:0;width:100%;height:100%;border:none;}
+.ov-info{width:45%;height:100%;overflow-y:auto;padding:36px 32px;}
+.ov-info::-webkit-scrollbar{width:2px;}
+.ov-info::-webkit-scrollbar-thumb{background:#eee;}
+.ov-meta{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:#aaa;margin-bottom:8px;}
+.ov-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,3vw,2.3rem);font-weight:600;line-height:1.1;margin-bottom:16px;}
+.ov-desc{font-size:.72rem;color:#555;line-height:1.85;margin-bottom:22px;}
+.ov-label{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:#aaa;margin-bottom:8px;}
+.ov-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.ov-tag{font-family:'DM Mono',monospace;font-size:.56rem;padding:3px 9px;background:#f4f4f4;color:#555;border-radius:2px;}
+.ov-features{list-style:none;}
+.ov-features li{font-size:.69rem;color:#555;line-height:1.7;padding:7px 0;border-bottom:1px solid #f0f0f0;display:flex;gap:10px;}
+.ov-features li::before{content:'—';color:#ccc;flex-shrink:0;}
+
+/* ── RESPONSIVE ── */
+
+/* Tablet: 600px–860px */
+@media(max-width:860px){
+  body{overflow-y:auto;}
+
+  #view-portfolio{
+    position:relative;
+    overflow:visible;
+    padding:56px 12px 32px;
+    min-height:100vh;
+    opacity:1;pointer-events:all;
+  }
+  #view-portfolio.visible{opacity:1;pointer-events:all;}
+
+  .wrapper{
+    flex-direction:column;
+    height:auto;
+    max-height:none;
+    border:1px solid #e8e8e8;
+    border-radius:4px;
+    overflow:visible;
+  }
+
+  .left{
+    width:100%;
+    height:auto;
+    border-right:none;
+    border-bottom:1px solid #e8e8e8;
+  }
+  .projects{overflow-y:visible;max-height:none;}
+
+  .right{
+    width:100%;
+    height:auto;
+  }
+  .about{overflow-y:visible;max-height:none;}
+
+  /* Overlay op tablet */
+  .ov-body{flex-direction:column;}
+  .ov-visual{
+    width:100%;
+    height:240px;
+    border-right:none;
+    border-bottom:1px solid #e8e8e8;
+    padding:20px;
+  }
+  .ov-info{
+    width:100%;
+    height:auto;
+    overflow-y:visible;
+  }
+}
+
+/* Mobile: max 600px */
+@media(max-width:600px){
+  body{overflow-y:auto;}
+
+  #view-landing .l-name{font-size:clamp(2.4rem,11vw,4rem);}
+  #view-landing .l-role{font-size:.5rem;letter-spacing:.12em;}
+  #view-landing .l-btn{font-size:.55rem;padding:10px 20px;}
+
+  #back-btn{top:10px;left:10px;font-size:.48rem;padding:6px 10px;}
+
+  #view-portfolio{
+    position:relative;
+    overflow:visible;
+    padding:50px 0 32px;
+    min-height:100vh;
+  }
+
+  .wrapper{
+    flex-direction:column;
+    height:auto;
+    max-height:none;
+    border-left:none;
+    border-right:none;
+    border-radius:0;
+  }
+
+  .left{width:100%;height:auto;border-right:none;border-bottom:1px solid #e8e8e8;}
+  .right{width:100%;height:auto;}
+  .projects{overflow-y:visible;}
+  .about{overflow-y:visible;padding:16px;}
+
+  .p-header{padding:14px 16px 12px;}
+  .p-header h1{font-size:.9rem;}
+  .a-header{padding:14px 16px 12px;}
+
+  .proj{padding:14px 16px;grid-template-columns:24px 1fr 14px;gap:0 8px;}
+  .proj-desc{display:none;}
+  .proj-title{font-size:1rem;}
+  .proj-num{font-size:.48rem;}
+
+  .a-name{font-size:1.5rem;}
+  .a-bio{font-size:.68rem;}
+  .skills-grid{grid-template-columns:repeat(3,1fr);gap:5px;}
+  .skill-chip{padding:8px 4px;font-size:.46rem;gap:4px;}
+  .skill-chip svg{width:20px;height:20px;}
+
+  /* Overlay op mobiel */
+  #overlay{overflow-y:auto;}
+  .ov-head{padding:10px 14px;gap:8px;}
+  .ov-back{font-size:.48rem;}
+  .ov-num{display:none;}
+  .demo-btn{font-size:.5rem;padding:6px 12px;}
+
+  .ov-body{
+    flex-direction:column;
+    overflow:visible;
+    min-height:0;
+  }
+  .ov-visual{
+    width:100%;
+    height:200px;
+    border-right:none;
+    border-bottom:1px solid #e8e8e8;
+    padding:14px;
+    flex-shrink:0;
+  }
+  .ov-info{
+    width:100%;
+    height:auto;
+    overflow-y:visible;
+    padding:20px 16px 32px;
+  }
+  .ov-title{font-size:1.5rem;}
+  .ov-desc{font-size:.68rem;}
+  .ov-features li{font-size:.65rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="view-landing">
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+  <div class="l-inner">
+    <div class="l-label">Portfolio — 2026</div>
+    <div class="l-name"><em>Gijs</em><br>van Belkom</div>
+    <div class="l-rule"></div>
+    <div class="l-role">Creative Developer &amp; UI Designer</div>
+    <div class="l-btn">
+      Bekijk mijn werk
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- BACK BUTTON -->
+<button id="back-btn">
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  Home
+</button>
+
+<!-- PORTFOLIO -->
+<div id="view-portfolio">
+  <div class="wrapper">
+
+    <div class="left">
+      <div class="p-header">
+        <h1>Gijs van Belkom</h1>
+        <span>Geselecteerde projecten</span>
+      </div>
+      <div class="projects">
+        <div class="proj" data-i="0">
+          <div class="proj-num">01</div>
+          <div>
+            <div class="proj-meta">2025 · Web App</div>
+            <div class="proj-title">Bloom — Plant Tracker</div>
+            <div class="proj-desc">Een minimalistische webapplicatie om kamerplanten bij te houden. Waterschema's instellen, notities toevoegen en urgentie in één oogopslag zien.</div>
+            <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">PHP</span><span class="tag">SQL</span></div>
+          </div>
+          <div class="proj-arrow">→</div>
+        </div>
+        <div class="proj" data-i="1">
+          <div class="proj-num">02</div>
+          <div>
+            <div class="proj-meta">2025 · Website</div>
+            <div class="proj-title">Noir — Koffie Concept</div>
+            <div class="proj-desc">Stijlvolle landingspagina voor een fictief specialty coffee brand. Focus op typografie, sfeer en een clean productoverzicht met WordPress als CMS.</div>
+            <div class="tags"><span class="tag">WordPress</span><span class="tag">CSS</span><span class="tag">Figma</span></div>
+          </div>
+          <div class="proj-arrow">→</div>
+        </div>
+        <div class="proj" data-i="2">
+          <div class="proj-num">03</div>
+          <div>
+            <div class="proj-meta">2024 · Dashboard</div>
+            <div class="proj-title">Pulse — Admin Panel</div>
+            <div class="proj-desc">Overzichtelijk admin dashboard met statistieken, gebruikersbeheer en donker thema. Gebouwd als schoolproject met focus op UI structuur.</div>
+            <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">PHP</span></div>
+          </div>
+          <div class="proj-arrow">→</div>
+        </div>
+        <div class="proj" data-i="3">
+          <div class="proj-num">04</div>
+          <div>
+            <div class="proj-meta">2025 · Web App</div>
+            <div class="proj-title">Grub — Recepten App</div>
+            <div class="proj-desc">Een recepten-app waar gebruikers recepten kunnen opslaan, zoeken op ingrediënt en weekmenu's kunnen plannen. Gebouwd met een Express backend en MongoDB.</div>
+            <div class="tags"><span class="tag">JavaScript</span><span class="tag">Node.js</span><span class="tag">Express</span><span class="tag">MongoDB</span></div>
+          </div>
+          <div class="proj-arrow">→</div>
+        </div>
+        <div class="proj" data-i="4">
+          <div class="proj-num">05</div>
+          <div>
+            <div class="proj-meta">2024 · UI Design</div>
+            <div class="proj-title">Yonder — Bioscoop App</div>
+            <div class="proj-desc">UX/UI ontwerp voor een democratische bioscoop-app waarbij bezoekers stemmen op welke film er gedraaid wordt. Volledig uitgewerkt in Figma met FO, TO en GO documentatie.</div>
+            <div class="tags"><span class="tag">Figma</span><span class="tag">UX</span><span class="tag">Prototyping</span></div>
+          </div>
+          <div class="proj-arrow">→</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="a-header"><h1>Over mij</h1></div>
+      <div class="about">
+        <div class="a-name"><em>Gijs</em><br>van Belkom</div>
+        <div class="a-role">Creative Developer &amp; UI Designer</div>
+        <p class="a-bio">Ik ben een <strong>frontend developer</strong> met een scherp oog voor design. Ik hou ervan om interfaces te bouwen die er niet alleen goed uitzien, maar ook gewoon lekker werken — van eerste schets tot live product.<br><br>Mijn focus ligt op de voorkant: HTML, CSS, JavaScript en hoe alles aanvoelt voor de gebruiker. Backend kan ik ook, maar dat is niet waar mijn <strong>hart ligt</strong>. Momenteel op zoek naar een stage of samenwerking waar frontend centraal staat.</p>
+
+        <div class="sec">
+          <div class="sec-title">Skills</div>
+          <div class="skills-grid">
+            <div class="skill-chip">
+              <svg viewBox="0 0 32 32"><path d="M4 4l2.4 27.2L16 28l9.6-2.8L28 4H4z" fill="#E44D26"/><path d="M16 25.6V6.4H26l-2 22.4L16 25.6z" fill="#F16529"/><path d="M16 11.2h-5.2l.4 4H16v3.6h-9.2l1.6 9.2L16 30.4V27l-4.4-1.2-.8-4.8H16V11.2z" fill="#EBEBEB"/><path d="M16 11.2v3.6h4.8l-.4 4.8H16V23.6h4.4l-.4 4.4L16 29.2v3.2l7.6-2.8 1.6-18.4H16z" fill="#fff"/></svg>
+              HTML
+            </div>
+            <div class="skill-chip">
+              <svg viewBox="0 0 32 32"><path d="M4 4l2.4 27.2L16 28l9.6-2.8L28 4H4z" fill="#1572B6"/><path d="M16 25.6V6.4H26l-2 22.4L16 25.6z" fill="#33A9DC"/><path d="M16 11.2h-5.2l.4 4H16v3.6H7.6l1.6 8.8 6.8 2V27l-4.4-1.2-.8-4.8H16V11.2z" fill="#fff"/><path d="M16 11.2v3.6h4.4l-.4 4.8H16V23.6h4l-.4 4.4-3.6.8v2.8l6.8-1.6 1.6-18.4H16z" fill="#fff"/></svg>
+              CSS
+            </div>
+            <div class="skill-chip">
+              <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="3" fill="#F7DF1E"/><path d="M8 24.4l2.2-1.4c.4.8.8 1.4 1.8 1.4.9 0 1.4-.4 1.4-1.8V14h2.8v8.7c0 3-1.7 4.3-4.2 4.3-2.2 0-3.6-1.2-4-2.6zM17.6 24l2.2-1.3c.6 1 1.4 1.7 2.7 1.7 1.2 0 1.9-.6 1.9-1.3 0-.9-.8-1.3-2-1.8l-.7-.3c-2-.9-3.3-2-3.3-4.3 0-2.1 1.6-3.7 4.2-3.7 1.8 0 3.1.6 4 2.2l-2.1 1.4c-.5-.9-1-1.2-1.9-1.2-.9 0-1.4.5-1.4 1.2 0 .8.5 1.2 1.8 1.7l.7.3c2.3 1 3.7 2 3.7 4.4 0 2.5-2 4-4.6 4-2.6 0-4.2-1.2-5.2-2.9z" fill="#000"/></svg>
+              JavaScript
+            </div>
+            <div class="skill-chip">
+              <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="3" fill="#4F5B93"/><text x="5" y="22" font-family="Arial" font-weight="bold" font-size="11" fill="white">PHP</text></svg>
+              PHP
+            </div>
+            <div class="skill-chip">
+              <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="3" fill="#336791"/><ellipse cx="16" cy="11" rx="8" ry="4" fill="none" stroke="white" stroke-width="1.5"/><path d="M8 11v10c0 2.2 3.6 4 8 4s8-1.8 8-4V11" fill="none" stroke="white" stroke-width="1.5"/><path d="M8 16c0 2.2 3.6 4 8 4s8-1.8 8-4" fill="none" stroke="white" stroke-width="1.5"/></svg>
+              SQL
+            </div>
+            <div class="skill-chip">
+              <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="3" fill="#21759B"/><text x="5" y="21" font-family="Arial" font-weight="bold" font-size="9.5" fill="white">WP</text></svg>
+              WordPress
+            </div>
+            <div class="skill-chip">
+              <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="3" fill="#F24E1E"/><circle cx="11" cy="16" r="4" fill="#FF7262"/><circle cx="21" cy="16" r="4" fill="#1ABCFE"/><circle cx="16" cy="11" r="4" fill="#A259FF"/><circle cx="16" cy="21" r="4" fill="#0ACF83"/></svg>
+              Figma
+            </div>
+
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-title">Contact</div>
+          <div class="contact-links">
+            <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#105;&#106;&#115;&#118;&#98;&#101;&#108;&#107;&#111;&#109;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;" class="contact-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/></svg>Mail
+            </a>
+            <a href="https://github.com/Gijs0" target="_blank" rel="noopener" class="contact-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>GitHub
+            </a>
+            <a href="#" class="contact-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div id="overlay">
+  <div class="ov-head">
+    <button class="ov-back" id="ov-back">← Terug</button>
+    <div class="ov-right">
+      <span class="ov-num" id="ov-num"></span>
+      <button class="demo-btn" id="demo-btn">▶ Demo</button>
+    </div>
+  </div>
+  <div class="ov-body">
+    <div class="ov-visual">
+      <div id="ov-preview"></div>
+      <iframe id="ov-demo" sandbox="allow-scripts"></iframe>
+    </div>
+    <div class="ov-info">
+      <div class="ov-meta" id="ov-meta"></div>
+      <div class="ov-title" id="ov-title"></div>
+      <div class="ov-desc" id="ov-desc"></div>
+      <div class="ov-label">Technologieën</div>
+      <div class="ov-tags" id="ov-tags"></div>
+      <div class="ov-label">Wat ik heb gebouwd</div>
+      <ul class="ov-features" id="ov-features"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── DATA ─── */
+const projects = [
+  {
+    num:'01 / 05', meta:'2025 — Web App', title:'Bloom\nPlant Tracker',
+    desc:'Bloom is een minimalistische webapplicatie waarmee gebruikers al hun kamerplanten op één plek bijhouden. Per plant stel je een waterschema in, voeg je notities toe en ziet het dashboard in één oogopslag welke planten aandacht nodig hebben.',
+    tags:['HTML','CSS','JavaScript','PHP','SQL'],
+    features:['Plantenprofiel aanmaken met naam, soort en beschrijving','Instelbaar waterschema per plant in dagen','Dashboard met kleurcodering op basis van urgentie','Notities per plant bijhouden','Login via PHP sessies','MySQL database met relaties tussen gebruikers en planten','Responsive layout voor telefoon en desktop','Zoekfunctie om snel een plant terug te vinden'],
+    visual:`<svg width="100%" height="100%" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect width="480" height="300" fill="#f4f7f4"/><rect x="0" y="0" width="480" height="46" fill="#2d4a2d"/><text x="60" y="28" font-family="Georgia,serif" font-size="13" fill="white" font-weight="bold">🌿 Bloom</text><text x="390" y="28" font-family="Arial" font-size="10" fill="rgba(255,255,255,0.5)">+ Plant</text><rect x="20" y="62" width="132" height="104" rx="6" fill="white"/><text x="86" y="94" font-family="Arial" font-size="24" text-anchor="middle">🌿</text><text x="36" y="114" font-family="Arial" font-size="9" fill="#222" font-weight="600">Monstera</text><text x="36" y="126" font-family="Arial" font-size="8" fill="#888">Gieten over 2d</text><rect x="36" y="136" width="64" height="3" rx="1.5" fill="#eee"/><rect x="36" y="136" width="46" height="3" rx="1.5" fill="#4caf50"/><rect x="164" y="62" width="132" height="104" rx="6" fill="white"/><text x="230" y="94" font-family="Arial" font-size="24" text-anchor="middle">🪴</text><text x="180" y="114" font-family="Arial" font-size="9" fill="#222" font-weight="600">Cactus</text><text x="180" y="126" font-family="Arial" font-size="8" fill="#888">Gieten over 12d</text><rect x="180" y="136" width="64" height="3" rx="1.5" fill="#eee"/><rect x="180" y="136" width="62" height="3" rx="1.5" fill="#4caf50"/><rect x="308" y="62" width="152" height="104" rx="6" fill="white"/><text x="384" y="94" font-family="Arial" font-size="24" text-anchor="middle">🌺</text><text x="324" y="114" font-family="Arial" font-size="9" fill="#222" font-weight="600">Orchidee</text><text x="324" y="126" font-family="Arial" font-size="8" fill="#e53935">Vandaag gieten!</text><rect x="324" y="136" width="64" height="3" rx="1.5" fill="#eee"/><rect x="324" y="136" width="9" height="3" rx="1.5" fill="#e53935"/><rect x="20" y="182" width="440" height="1" fill="#eee"/><text x="20" y="202" font-family="Arial" font-size="7" fill="#bbb" letter-spacing="1.5">RECENTE ACTIVITEIT</text><rect x="20" y="212" width="200" height="7" rx="3" fill="#eee"/><rect x="20" y="225" width="160" height="7" rx="3" fill="#eee"/><circle cx="410" cy="226" r="24" fill="#2d4a2d"/><text x="410" y="231" font-family="Arial" font-size="14" text-anchor="middle" fill="white" font-weight="bold">3</text><text x="410" y="244" font-family="Arial" font-size="7" text-anchor="middle" fill="rgba(255,255,255,0.6)">planten</text></svg>`,
+    demo:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif;}body{background:#f0f5f0;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+.bar{background:#2d4a2d;color:white;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:8px;}
+.bar h1{font-size:13px;font-weight:700;letter-spacing:1px;white-space:nowrap;}
+.bar-actions{display:flex;gap:6px;align-items:center;}
+.bar-search{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:white;padding:5px 10px;border-radius:6px;font-size:10px;outline:none;width:110px;}
+.bar-search::placeholder{color:rgba(255,255,255,.4);}
+.bar-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:white;padding:5px 11px;border-radius:6px;cursor:pointer;font-size:10px;font-weight:600;transition:background .2s,transform .15s;white-space:nowrap;}
+.bar-btn:hover{background:rgba(255,255,255,.25);transform:translateY(-1px);}
+.bar-btn:active{transform:scale(.97);}
+.tabs{display:flex;background:#1e3a1e;flex-shrink:0;}
+.tab{flex:1;padding:8px;font-size:10px;font-weight:600;color:rgba(255,255,255,.4);border:none;background:none;cursor:pointer;transition:color .2s,background .2s;letter-spacing:.5px;}
+.tab.active{color:white;background:rgba(255,255,255,.08);}
+.view{display:none;flex:1;overflow-y:auto;}
+.view.active{display:flex;flex-direction:column;}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px;}
+@keyframes ci{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.card{background:white;border-radius:10px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:transform .2s,box-shadow .2s;animation:ci .3s ease both;position:relative;}
+.card:nth-child(1){animation-delay:.04s}.card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.12s}.card:nth-child(4){animation-delay:.16s}.card:nth-child(5){animation-delay:.2s}.card:nth-child(6){animation-delay:.24s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1);}
+.del-btn{position:absolute;top:7px;right:7px;background:rgba(229,57,53,.1);border:none;color:#e53935;border-radius:4px;width:18px;height:18px;font-size:10px;cursor:pointer;opacity:0;transition:opacity .2s,transform .15s;display:flex;align-items:center;justify-content:center;}
+.card:hover .del-btn{opacity:1;}
+.del-btn:hover{background:rgba(229,57,53,.2);transform:scale(1.1);}
+.icon{font-size:22px;margin-bottom:6px;display:block;}
+.cname{font-weight:700;font-size:11px;color:#1a1a1a;margin-bottom:1px;}
+.csort{font-size:8px;color:#aaa;margin-bottom:5px;}
+.health-row{display:flex;gap:3px;margin-bottom:6px;}
+.health-dot{width:8px;height:8px;border-radius:50%;cursor:pointer;transition:transform .15s;}
+.health-dot:hover{transform:scale(1.3);}
+.status{font-size:9px;margin-bottom:6px;font-weight:500;}
+.ok{color:#2e7d32;}.warn{color:#e65100;}.alert{color:#c62828;}
+.track{background:#eee;border-radius:4px;height:4px;overflow:hidden;margin-bottom:7px;}
+.fill{height:100%;border-radius:4px;transition:width .5s ease;}
+.g{background:linear-gradient(90deg,#4caf50,#66bb6a);}.o{background:linear-gradient(90deg,#ff9800,#ffa726);}.r{background:linear-gradient(90deg,#e53935,#ef5350);}
+.card-btns{display:flex;gap:5px;}
+.cbtn{flex:1;border:none;padding:6px 0;border-radius:6px;cursor:pointer;font-size:9px;font-weight:700;transition:transform .15s,box-shadow .15s;}
+.cbtn:hover{transform:translateY(-1px);}
+.cbtn:active{transform:scale(.96);}
+.water-btn{background:#2d4a2d;color:white;}
+.water-btn:hover{box-shadow:0 3px 10px rgba(45,74,45,.3);}
+.note-btn{background:#e8f5e9;color:#2d4a2d;}
+.note-text{font-size:8px;color:#888;margin-top:5px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.log-section{padding:12px;flex:1;}
+.log-title{font-size:8px;letter-spacing:1.5px;color:#888;text-transform:uppercase;margin-bottom:8px;}
+.log-item{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #eee;}
+.log-item:last-child{border-bottom:none;}
+.log-icon{font-size:14px;flex-shrink:0;}
+.log-text{font-size:10px;color:#333;line-height:1.4;}
+.log-time{font-size:8px;color:#bbb;margin-top:1px;}
+.alert-section{padding:12px;flex:1;}
+.alert-card{background:white;border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.alert-icon{font-size:18px;}
+.alert-info{flex:1;}
+.alert-name{font-size:11px;font-weight:600;color:#1a1a1a;}
+.alert-msg{font-size:9px;color:#888;}
+.water-now-btn{background:#2d4a2d;color:white;border:none;padding:5px 10px;border-radius:6px;font-size:9px;font-weight:700;cursor:pointer;transition:transform .15s;}
+.water-now-btn:hover{transform:scale(1.05);}
+.empty{text-align:center;padding:32px;color:#bbb;font-size:11px;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(2px);}
+.modal.open{display:flex;}
+@keyframes su{from{transform:translateY(14px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.mbox{background:white;border-radius:14px;padding:18px;width:250px;box-shadow:0 16px 48px rgba(0,0,0,.2);animation:su .25s cubic-bezier(.34,1.56,.64,1);}
+.mbox h2{font-size:12px;font-weight:700;margin-bottom:11px;color:#1a1a1a;}
+.mbox input,.mbox select,.mbox textarea{width:100%;border:1px solid #e0e0e0;border-radius:7px;padding:7px 10px;font-size:11px;margin-bottom:7px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:inherit;}
+.mbox textarea{resize:none;height:56px;}
+.mbox input:focus,.mbox select:focus,.mbox textarea:focus{border-color:#2d4a2d;box-shadow:0 0 0 3px rgba(45,74,45,.1);}
+.mbtns{display:flex;gap:6px;}
+.mbtns button{flex:1;padding:8px;border-radius:7px;border:none;cursor:pointer;font-size:11px;font-weight:700;transition:transform .15s;}
+.bc{background:#f0f0f0;color:#666;}.bc:hover{transform:translateY(-1px);}
+.ba{background:#2d4a2d;color:white;}.ba:hover{transform:translateY(-1px);}
+.mbtns button:active{transform:scale(.96);}
+.toast{position:fixed;bottom:12px;left:50%;transform:translateX(-50%) translateY(50px);background:#1b5e20;color:white;padding:7px 18px;border-radius:20px;font-size:10px;font-weight:700;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .3s;pointer-events:none;opacity:0;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+@keyframes fadeout{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.9)}}
+.card.removing{animation:fadeout .25s ease forwards;}
+</style></head><body>
+<div class="bar">
+  <h1>🌿 Bloom</h1>
+  <div class="bar-actions">
+    <input class="bar-search" id="srch" placeholder="Zoeken..."/>
+    <button class="bar-btn" id="addBtn">+ Plant</button>
+  </div>
+</div>
+<div class="tabs">
+  <button class="tab active" data-tab="plants">🌱 Planten</button>
+  <button class="tab" data-tab="alerts">⚠️ Alerts</button>
+  <button class="tab" data-tab="log">📋 Logboek</button>
+</div>
+<div class="view active" id="view-plants"><div class="grid" id="grid"></div></div>
+<div class="view" id="view-alerts"><div class="alert-section" id="alert-list"></div></div>
+<div class="view" id="view-log"><div class="log-section"><div class="log-title">Recente activiteit</div><div id="log-list"></div></div></div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="addModal">
+  <div class="mbox">
+    <h2>Nieuwe plant toevoegen</h2>
+    <input id="pn" placeholder="Naam (bijv. Monstera)"/>
+    <input id="ps" placeholder="Soort (bijv. Tropisch)"/>
+    <select id="pi"><option>🌿</option><option>🪴</option><option>🌺</option><option>🌱</option><option>🍀</option><option>🌵</option><option>🌸</option><option>🌾</option></select>
+    <select id="pd"><option value="2">Elke 2 dagen</option><option value="4">Elke 4 dagen</option><option value="7" selected>Elke week</option><option value="14">Elke 2 weken</option><option value="21">Elke 3 weken</option></select>
+    <textarea id="pnote" placeholder="Notitie (optioneel)..."></textarea>
+    <div class="mbtns"><button class="bc" id="cancelAdd">Annuleer</button><button class="ba" id="saveAdd">Toevoegen</button></div>
+  </div>
+</div>
+<div class="modal" id="noteModal">
+  <div class="mbox">
+    <h2>📝 Notitie bewerken</h2>
+    <textarea id="noteText" placeholder="Schrijf een notitie..."></textarea>
+    <div class="mbtns"><button class="bc" id="cancelNote">Annuleer</button><button class="ba" id="saveNote">Opslaan</button></div>
+  </div>
+</div>
+<script>
+const healthColors=['#e53935','#ff9800','#ffd600','#8bc34a','#4caf50'];
+let plants=[
+  {name:'Monstera',sort:'Tropisch',icon:'🌿',days:7,w:5,health:4,note:'Staat graag op de vensterbank.',log:[]},
+  {name:'Cactus',sort:'Vetplant',icon:'🌵',days:14,w:2,health:5,note:'',log:[]},
+  {name:'Orchidee',sort:'Bloeiend',icon:'🌸',days:4,w:4,health:2,note:'Bladeren worden geel.',log:[]}
+];
+let actLog=[];
+let editNoteIdx=null;
+let currentTab='plants';
+
+function addLog(msg){actLog.unshift({msg,time:new Date().toLocaleTimeString('nl',{hour:'2-digit',minute:'2-digit'})});if(actLog.length>20)actLog.pop();}
+
+function render(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  const list=plants.filter(p=>p.name.toLowerCase().includes(q)||p.sort.toLowerCase().includes(q));
+  document.getElementById('grid').innerHTML=list.length?list.map((p,ri)=>{
+    const i=plants.indexOf(p);
+    const left=p.days-p.w;
+    const cls=left<=0?'alert':left<=2?'warn':'ok';
+    const lbl=left<=0?'Vandaag gieten!':left===1?'Morgen gieten':'Over '+left+'d';
+    const fc=cls==='ok'?'g':cls==='warn'?'o':'r';
+    const pct=Math.round(Math.min(p.w/p.days,1)*100);
+    const dots=healthColors.map((c,hi)=>'<div class="health-dot" style="background:'+(hi<p.health?c:'#eee')+'" data-pi="'+i+'" data-hi="'+(hi+1)+'"></div>').join('');
+    return'<div class="card" id="card'+i+'"><button class="del-btn" data-di="'+i+'">✕</button><span class="icon">'+p.icon+'</span><div class="cname">'+p.name+'</div><div class="csort">'+p.sort+'</div><div class="health-row">'+dots+'</div><div class="status '+cls+'">'+lbl+'</div><div class="track"><div class="fill '+fc+'" style="width:'+pct+'%"></div></div><div class="card-btns"><button class="cbtn water-btn" data-wi="'+i+'">💧 Water</button><button class="cbtn note-btn" data-ni="'+i+'">📝 Notitie</button></div>'+(p.note?'<div class="note-text">📌 '+p.note+'</div>':'')+'</div>';
+  }).join(''):'<div class="empty">Geen planten gevonden.</div>';
+  renderAlerts();
+  renderLog();
+}
+
+function renderAlerts(){
+  const urgent=plants.filter(p=>(p.days-p.w)<=0);
+  const warn=plants.filter(p=>{const l=p.days-p.w;return l>0&&l<=2;});
+  const sick=plants.filter(p=>p.health<=2);
+  let html='';
+  if(!urgent.length&&!warn.length&&!sick.length){html='<div class="empty">✅ Alle planten zijn in orde!</div>';}
+  urgent.forEach(p=>{const i=plants.indexOf(p);html+='<div class="alert-card"><div class="alert-icon">🚨</div><div class="alert-info"><div class="alert-name">'+p.name+'</div><div class="alert-msg">Heeft nu water nodig!</div></div><button class="water-now-btn" data-wi="'+i+'">💧 Water</button></div>';});
+  warn.forEach(p=>{html+='<div class="alert-card"><div class="alert-icon">⚠️</div><div class="alert-info"><div class="alert-name">'+p.name+'</div><div class="alert-msg">Binnenkort water geven</div></div></div>';});
+  sick.forEach(p=>{html+='<div class="alert-card"><div class="alert-icon">🤒</div><div class="alert-info"><div class="alert-name">'+p.name+'</div><div class="alert-msg">Gezondheid is laag — check de plant!</div></div></div>';});
+  document.getElementById('alert-list').innerHTML=html;
+}
+
+function renderLog(){
+  document.getElementById('log-list').innerHTML=actLog.length?actLog.map(e=>'<div class="log-item"><div class="log-icon">🌿</div><div><div class="log-text">'+e.msg+'</div><div class="log-time">'+e.time+'</div></div></div>').join(''):'<div class="empty">Nog geen activiteit.</div>';
+}
+
+// Events
+document.getElementById('grid').addEventListener('click',function(e){
+  const wb=e.target.closest('.water-btn');
+  if(wb){const i=+wb.dataset.wi;const c=document.getElementById('card'+i);if(c)c.style.transform='scale(.96)';setTimeout(()=>{plants[i].w=0;addLog('💧 '+plants[i].name+' heeft water gekregen');render();toast('💧 '+plants[i].name+' gegoten!');},150);}
+  const nb=e.target.closest('.note-btn');
+  if(nb){editNoteIdx=+nb.dataset.ni;document.getElementById('noteText').value=plants[editNoteIdx].note||'';document.getElementById('noteModal').classList.add('open');}
+  const db=e.target.closest('.del-btn');
+  if(db){const i=+db.dataset.di;const c=document.getElementById('card'+i);if(c){c.classList.add('removing');setTimeout(()=>{addLog('🗑️ '+plants[i].name+' verwijderd');plants.splice(i,1);render();toast('🗑️ Plant verwijderd');},240);}}
+  const hd=e.target.closest('.health-dot');
+  if(hd){const pi=+hd.dataset.pi;const hi=+hd.dataset.hi;plants[pi].health=hi;addLog('❤️ Gezondheid '+plants[pi].name+' bijgewerkt naar '+hi+'/5');render();}
+});
+
+document.getElementById('alert-list').addEventListener('click',function(e){
+  const wb=e.target.closest('.water-now-btn');
+  if(wb){const i=+wb.dataset.wi;plants[i].w=0;addLog('💧 '+plants[i].name+' heeft water gekregen via Alerts');render();toast('💧 '+plants[i].name+' gegoten!');}
+});
+
+document.getElementById('srch').addEventListener('input',render);
+
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',function(){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');
+  currentTab=this.dataset.tab;
+  document.getElementById('view-'+currentTab).classList.add('active');
+  if(currentTab!=='plants')render();
+}));
+
+document.getElementById('addBtn').addEventListener('click',()=>document.getElementById('addModal').classList.add('open'));
+document.getElementById('cancelAdd').addEventListener('click',()=>document.getElementById('addModal').classList.remove('open'));
+document.getElementById('saveAdd').addEventListener('click',function(){
+  const n=document.getElementById('pn').value.trim();
+  if(!n)return;
+  plants.push({name:n,sort:document.getElementById('ps').value||'Onbekend',icon:document.getElementById('pi').value,days:+document.getElementById('pd').value,w:0,health:4,note:document.getElementById('pnote').value.trim(),log:[]});
+  addLog('🌱 '+n+' toegevoegd aan collectie');
+  render();
+  document.getElementById('addModal').classList.remove('open');
+  ['pn','ps','pnote'].forEach(id=>document.getElementById(id).value='');
+  toast('🌱 '+n+' toegevoegd!');
+});
+document.getElementById('cancelNote').addEventListener('click',()=>document.getElementById('noteModal').classList.remove('open'));
+document.getElementById('saveNote').addEventListener('click',function(){
+  if(editNoteIdx===null)return;
+  plants[editNoteIdx].note=document.getElementById('noteText').value.trim();
+  addLog('📝 Notitie van '+plants[editNoteIdx].name+' bijgewerkt');
+  render();
+  document.getElementById('noteModal').classList.remove('open');
+  toast('📝 Notitie opgeslagen!');
+});
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+render();
+<\/script></body></html>`
+  },
+  {
+    num:'02 / 05', meta:'2025 — Website', title:'Noir\nKoffie Concept',
+    desc:'Noir is een volledig uitgewerkte landingspagina voor een fictief specialty coffee merk. Eerst uitgewerkt in Figma, daarna omgezet naar een custom WordPress thema met scroll-animaties en een sfeervolle hero sectie.',
+    tags:['WordPress','CSS','Figma','PHP'],
+    features:['Volledig custom WordPress thema zonder page builder','Figma prototype als basis — pixel-perfect omgezet','Scroll-animaties voor een filmische ervaring','Productpagina met koffiesoorten en smaakprofiel','Donker kleurenpalet met warme gouden accenten','Custom post type voor koffieproducten via PHP','Contactformulier met validatie','SEO-vriendelijke structuur met semantische HTML'],
+    visual:`<svg width="100%" height="100%" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect width="480" height="300" fill="#1a1209"/><rect x="0" y="0" width="480" height="42" fill="#110e06"/><text x="30" y="26" font-family="Georgia,serif" font-size="14" fill="#c9a84c" font-weight="bold" letter-spacing="4">NOIR</text><text x="330" y="26" font-family="Arial" font-size="8" fill="rgba(255,255,255,0.3)" letter-spacing="1.5">MENU</text><text x="372" y="26" font-family="Arial" font-size="8" fill="rgba(255,255,255,0.3)" letter-spacing="1.5">SHOP</text><text x="414" y="26" font-family="Arial" font-size="8" fill="rgba(255,255,255,0.3)" letter-spacing="1.5">ABOUT</text><text x="30" y="80" font-family="Arial" font-size="8" fill="#c9a84c" letter-spacing="4" opacity="0.8">SPECIALTY COFFEE</text><text x="28" y="114" font-family="Georgia,serif" font-size="28" fill="white" font-weight="bold">Puur van</text><text x="28" y="148" font-family="Georgia,serif" font-size="28" fill="white" font-weight="bold">oorsprong.</text><text x="30" y="168" font-family="Arial" font-size="8" fill="rgba(255,255,255,0.3)" font-style="italic">Ethiopië · Colombia · Guatemala</text><rect x="30" y="182" width="100" height="26" rx="1" fill="#c9a84c"/><text x="80" y="199" font-family="Arial" font-size="9" fill="#1a1209" text-anchor="middle" font-weight="bold" letter-spacing="2">ONTDEK</text><ellipse cx="358" cy="188" rx="74" ry="74" fill="#221508" opacity="0.7"/><ellipse cx="358" cy="176" rx="46" ry="46" fill="#2d1e0a"/><ellipse cx="358" cy="176" rx="32" ry="32" fill="#1a0e04"/><ellipse cx="358" cy="176" rx="22" ry="22" fill="#291a08"/><path d="M346 176 Q358 160 370 176 Q358 192 346 176" fill="#c9a84c" opacity="0.4"/><path d="M314 226 L318 182 L398 182 L402 226 Z" fill="#2d1e0a"/><rect x="314" y="222" width="88" height="7" rx="3.5" fill="#3d2c14"/><rect x="0" y="268" width="480" height="32" fill="#0e0a04"/><text x="30" y="287" font-family="Arial" font-size="7" fill="rgba(255,255,255,0.15)" letter-spacing="2">HANDGEPLUKT · DUURZAAM · PUUR</text></svg>`,
+    demo:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#111008;color:white;font-family:Georgia,serif;height:100vh;overflow-y:auto;}@keyframes fs{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes pi{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}nav{display:flex;justify-content:space-between;align-items:center;padding:11px 18px;border-bottom:1px solid rgba(201,168,76,.1);position:sticky;top:0;background:#111008;z-index:10;}.logo{font-size:15px;font-weight:700;letter-spacing:5px;color:#c9a84c;}.nl{display:flex;gap:14px;}.nl span{font-family:system-ui;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.3);cursor:pointer;text-transform:uppercase;transition:color .2s;}.nl span:hover,.nl span.a{color:#c9a84c;}.page{display:none;}.page.a{display:block;animation:fs .3s ease both;}.hero{text-align:center;padding:30px 16px 18px;}.hs{font-family:system-ui;font-size:7px;letter-spacing:5px;color:#c9a84c;margin-bottom:12px;text-transform:uppercase;}.hero h1{font-size:28px;line-height:1.15;margin-bottom:10px;}.hero p{font-family:system-ui;font-size:11px;color:rgba(255,255,255,.35);max-width:260px;margin:0 auto 18px;line-height:1.7;}.hb{background:#c9a84c;color:#111008;border:none;padding:11px 24px;font-family:system-ui;font-size:9px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:transform .15s,box-shadow .2s;}.hb:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,168,76,.3);}.hb:active{transform:scale(.97);}.beans{display:flex;justify-content:center;gap:8px;margin-top:18px;}.bean{background:#1a1209;border:1px solid rgba(201,168,76,.1);border-radius:8px;padding:10px 12px;text-align:center;transition:border-color .2s,transform .2s;}.bean:hover{border-color:rgba(201,168,76,.3);transform:translateY(-2px);}.bn{font-size:11px;color:#c9a84c;margin-bottom:2px;}.bo{font-family:system-ui;font-size:8px;color:rgba(255,255,255,.22);}.mt{font-family:system-ui;font-size:7px;font-weight:700;letter-spacing:5px;color:#c9a84c;margin-bottom:12px;text-transform:uppercase;padding:14px 14px 0;}.mg{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 14px 14px;}.mi{background:#1a1209;border:1px solid rgba(201,168,76,.08);border-radius:8px;padding:12px;transition:border-color .2s,transform .2s,box-shadow .2s;animation:pi .3s ease both;}.mi:nth-child(1){animation-delay:.05s}.mi:nth-child(2){animation-delay:.1s}.mi:nth-child(3){animation-delay:.15s}.mi:nth-child(4){animation-delay:.2s}.mi:nth-child(5){animation-delay:.25s}.mi:nth-child(6){animation-delay:.3s}.mi:hover{border-color:rgba(201,168,76,.28);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3);}.mi h3{font-size:12px;margin-bottom:3px;}.mi p{font-family:system-ui;font-size:9px;color:rgba(255,255,255,.28);line-height:1.5;margin-bottom:8px;}.mp{font-size:11px;color:#c9a84c;display:flex;justify-content:space-between;align-items:center;}.mb{background:#c9a84c;color:#111008;border:none;padding:3px 10px;font-size:9px;font-weight:700;cursor:pointer;border-radius:2px;transition:transform .15s,box-shadow .15s,background .15s;}.mb:hover{background:#d4b86a;transform:scale(1.08);}.mb:active{transform:scale(.93);}.mb.added{background:#a07838;}@keyframes ap{0%{transform:scale(1)}40%{transform:scale(.86)}70%{transform:scale(1.1)}100%{transform:scale(1)}}.mb.added{animation:ap .3s ease;}.ce{text-align:center;padding:28px;color:rgba(255,255,255,.2);font-family:system-ui;font-size:11px;}.ci{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px;}.cs{font-family:system-ui;font-size:8px;color:rgba(255,255,255,.25);}.cpr{color:#c9a84c;}.ct{margin-top:10px;text-align:right;font-size:12px;}.ct span{color:#c9a84c;}.chk{margin-top:10px;width:100%;background:#c9a84c;color:#111008;border:none;padding:11px;font-family:system-ui;font-weight:700;letter-spacing:2px;font-size:9px;cursor:pointer;text-transform:uppercase;transition:transform .15s,box-shadow .2s;}.chk:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(201,168,76,.28);}.bdg{background:#c9a84c;color:#111008;border-radius:50%;width:13px;height:13px;font-size:7px;font-family:system-ui;font-weight:700;display:inline-flex;align-items:center;justify-content:center;margin-left:3px;}@keyframes bb{0%{transform:scale(1)}50%{transform:scale(1.55)}100%{transform:scale(1)}}.bdg.bump{animation:bb .3s cubic-bezier(.34,1.56,.64,1);}.toast{position:fixed;bottom:12px;left:50%;transform:translateX(-50%) translateY(40px);background:#c9a84c;color:#111008;padding:7px 16px;font-family:system-ui;font-size:10px;font-weight:700;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .3s;pointer-events:none;opacity:0;}.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}.cw{padding:14px;}</style></head><body><nav><div class="logo">NOIR</div><div class="nl"><span class="a" id="n0">Home</span><span id="n1">Menu</span><span id="n2">Bestelling <span class="bdg" id="bdg">0</span></span></div></nav><div class="page a" id="home"><div class="hero"><div class="hs">Specialty Coffee · Sinds 2019</div><h1>Puur van<br>oorsprong.</h1><p>Handgeplukt, zorgvuldig geroosterd en met respect voor de boer.</p><button class="hb" id="toMenu">Bekijk ons menu</button></div><div class="beans"><div class="bean"><div style="font-size:18px;margin-bottom:4px">☕</div><div class="bn">Ethiopië</div><div class="bo">Yirgacheffe</div></div><div class="bean"><div style="font-size:18px;margin-bottom:4px">🫘</div><div class="bn">Colombia</div><div class="bo">Huila</div></div><div class="bean"><div style="font-size:18px;margin-bottom:4px">✨</div><div class="bn">Guatemala</div><div class="bo">Antigua</div></div></div></div><div class="page" id="menu"><div class="mt">Ons menu</div><div class="mg" id="menuGrid"></div></div><div class="page" id="cart"><div class="cw"><div class="mt" style="padding:0 0 10px">Jouw bestelling</div><div id="cl"></div></div></div><div class="toast" id="toast"></div><script>const items=[{n:'Espresso',d:'Krachtig en vol.',p:2.80},{n:'Cappuccino',d:'Zijdezacht schuim.',p:3.90},{n:'Pour Over',d:'Langzaam gezet.',p:4.50},{n:'Cold Brew',d:'18 uur koud.',p:4.20},{n:'Flat White',d:'Romig en sterk.',p:3.60},{n:'Filter',d:'Klassiek en vers.',p:2.50}];const pages=['home','menu','cart'];const mg=document.getElementById('menuGrid');mg.innerHTML=items.map((m,i)=>'<div class="mi"><h3>'+m.n+'</h3><p>'+m.d+'</p><div class="mp"><span>€'+m.p.toFixed(2).replace('.',',')+'</span><button class="mb" data-i="'+i+'">+</button></div></div>').join('');let cart=[];function show(id){pages.forEach(p=>{document.getElementById(p).classList.remove('a');document.getElementById('n'+pages.indexOf(p)).classList.remove('a');});document.getElementById(id).classList.add('a');document.getElementById('n'+pages.indexOf(id)).classList.add('a');if(id==='cart')rc();}['n0','n1','n2'].forEach((id,i)=>document.getElementById(id).addEventListener('click',()=>show(pages[i])));document.getElementById('toMenu').addEventListener('click',()=>show('menu'));mg.addEventListener('click',function(e){const btn=e.target.closest('.mb');if(!btn)return;const i=+btn.dataset.i;const m=items[i];cart.push({n:m.n,p:m.p});const bdg=document.getElementById('bdg');bdg.textContent=cart.length;bdg.classList.remove('bump');void bdg.offsetWidth;bdg.classList.add('bump');btn.classList.add('added');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('added');btn.textContent='+';},700);toast('☕ '+m.n+' toegevoegd');});function rc(){const el=document.getElementById('cl');if(!cart.length){el.innerHTML='<div class="ce">Je bestelling is leeg.</div>';return;}const tot=cart.reduce((a,b)=>a+b.p,0).toFixed(2);el.innerHTML=cart.map(item=>'<div class="ci"><div>'+item.n+'<div class="cs">1x</div></div><div class="cpr">€'+item.p.toFixed(2).replace('.',',')+'</div></div>').join('')+'<div class="ct">Totaal: <span>€'+tot.replace('.',',')+'</span></div><button class="chk" id="chkbtn">Afrekenen</button>';document.getElementById('chkbtn').addEventListener('click',checkout);}function checkout(){cart=[];document.getElementById('bdg').textContent=0;rc();toast('Bestelling geplaatst!');}function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}show('home');<\/script></body></html>`
+  },
+  {
+    num:'03 / 05', meta:'2024 — Dashboard', title:'Pulse\nAdmin Panel',
+    desc:'Pulse is een admin dashboard gebouwd als schoolproject. Een interface die er professioneel uitziet én bruikbaar is. Live statistieken, een gebruikerstabel met zoekfunctie en een weekgrafiek voor bezoekersdata.',
+    tags:['HTML','CSS','JavaScript','PHP','SQL'],
+    features:['Sidebar navigatie met actieve statusindicatoren','Statistiekenkaarten met live bezoekers','Staafgrafiek voor bezoekersdata per dag','Gebruikerstabel met zoekfunctie en statusfilter','Donker thema met blauw accent','Data via PHP en MySQL, weergegeven via JavaScript','Notificatiesysteem met ongelezen teller','Responsive layout voor tablet en desktop'],
+    visual:`<svg width="100%" height="100%" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect width="480" height="300" fill="#0f1117"/><rect x="0" y="0" width="66" height="300" fill="#0a0c12"/><rect x="15" y="16" width="36" height="36" rx="8" fill="#3b82f6"/><text x="33" y="38" font-family="Arial" font-size="14" text-anchor="middle" fill="white" font-weight="bold">P</text><rect x="18" y="66" width="30" height="30" rx="6" fill="#1e2433"/><rect x="66" y="42" width="414" height="1" fill="#1e2433"/><text x="84" y="26" font-family="Arial" font-size="12" fill="white" font-weight="600">Dashboard</text><rect x="82" y="54" width="88" height="56" rx="6" fill="#161b27"/><text x="94" y="70" font-family="Arial" font-size="7" fill="rgba(255,255,255,0.3)">GEBRUIKERS</text><text x="94" y="90" font-family="Arial" font-size="19" fill="white" font-weight="bold">1,248</text><text x="94" y="103" font-family="Arial" font-size="8" fill="#4ade80">↑ 12%</text><rect x="178" y="54" width="88" height="56" rx="6" fill="#161b27"/><text x="190" y="70" font-family="Arial" font-size="7" fill="rgba(255,255,255,0.3)">SESSIES</text><text x="190" y="90" font-family="Arial" font-size="19" fill="white" font-weight="bold">3,891</text><text x="190" y="103" font-family="Arial" font-size="8" fill="#4ade80">↑ 8%</text><rect x="274" y="54" width="88" height="56" rx="6" fill="#161b27"/><text x="286" y="70" font-family="Arial" font-size="7" fill="rgba(255,255,255,0.3)">OMZET</text><text x="286" y="90" font-family="Arial" font-size="19" fill="white" font-weight="bold">€9,240</text><text x="286" y="103" font-family="Arial" font-size="8" fill="#f87171">↓ 3%</text><rect x="370" y="54" width="88" height="56" rx="6" fill="#161b27" stroke="#3b82f6" stroke-width="0.5" stroke-opacity="0.4"/><text x="382" y="70" font-family="Arial" font-size="7" fill="#93c5fd">ACTIEF NU</text><text x="382" y="90" font-family="Arial" font-size="19" fill="#3b82f6" font-weight="bold">47</text><text x="382" y="103" font-family="Arial" font-size="8" fill="#93c5fd">live</text><rect x="82" y="120" width="230" height="100" rx="6" fill="#161b27"/><text x="94" y="136" font-family="Arial" font-size="7" fill="rgba(255,255,255,0.3)">BEZOEKEN PER DAG</text><rect x="94" y="180" width="14" height="26" rx="2" fill="#3b82f6" opacity="0.45"/><rect x="114" y="167" width="14" height="39" rx="2" fill="#3b82f6" opacity="0.58"/><rect x="134" y="153" width="14" height="53" rx="2" fill="#3b82f6" opacity="0.72"/><rect x="154" y="161" width="14" height="45" rx="2" fill="#3b82f6" opacity="0.62"/><rect x="174" y="146" width="14" height="60" rx="2" fill="#3b82f6"/><rect x="194" y="159" width="14" height="47" rx="2" fill="#3b82f6" opacity="0.68"/><rect x="214" y="172" width="14" height="34" rx="2" fill="#3b82f6" opacity="0.5"/><rect x="320" y="120" width="138" height="100" rx="6" fill="#161b27"/><text x="332" y="136" font-family="Arial" font-size="7" fill="rgba(255,255,255,0.3)">GEBRUIKERS</text><circle cx="344" cy="155" r="8" fill="#2d3748"/><text x="344" y="159" font-family="Arial" font-size="7" text-anchor="middle" fill="white">JK</text><rect x="357" y="151" width="46" height="4" rx="2" fill="#2d3748"/><rect x="420" y="150" width="22" height="10" rx="3" fill="rgba(74,222,128,0.15)"/><text x="431" y="158" font-family="Arial" font-size="7" text-anchor="middle" fill="#4ade80">actief</text><circle cx="344" cy="175" r="8" fill="#2d3748"/><text x="344" y="179" font-family="Arial" font-size="7" text-anchor="middle" fill="white">LS</text><rect x="357" y="171" width="38" height="4" rx="2" fill="#2d3748"/><rect x="420" y="170" width="22" height="10" rx="3" fill="rgba(248,113,113,0.15)"/><text x="431" y="178" font-family="Arial" font-size="7" text-anchor="middle" fill="#f87171">inact.</text></svg>`,
+    demo:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif;}body{background:#0f1117;color:white;display:flex;height:100vh;overflow:hidden;font-size:12px;}@keyframes si{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}@keyframes bg{from{height:0}to{}}@keyframes ri{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}.sb{width:46px;background:#0a0c12;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.06);}.sl{width:28px;height:28px;background:#3b82f6;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;margin-bottom:8px;cursor:pointer;transition:transform .15s,box-shadow .15s;}.sl:hover{transform:scale(1.08);box-shadow:0 3px 12px rgba(59,130,246,.4);}.si{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:background .15s;}.si:hover,.si.a{background:#1e2433;}.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}.top{background:#0f1117;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}.top h2{font-size:11px;font-weight:600;}.nb{background:#1e2433;border-radius:20px;padding:3px 9px;font-size:10px;cursor:pointer;transition:background .15s;}.nb:hover{background:#2a3448;}.av{width:22px;height:22px;background:#2d3748;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;cursor:pointer;}.c{flex:1;overflow-y:auto;padding:10px 12px;}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}.stat{background:#161b27;border-radius:6px;padding:8px;cursor:default;transition:transform .2s,box-shadow .2s;animation:si .35s ease both;}.stat:nth-child(1){animation-delay:.05s}.stat:nth-child(2){animation-delay:.1s}.stat:nth-child(3){animation-delay:.15s}.stat:nth-child(4){animation-delay:.2s}.stat:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.3);}.sl2{font-size:6px;letter-spacing:.7px;color:rgba(255,255,255,.28);margin-bottom:3px;text-transform:uppercase;}.sv{font-size:15px;font-weight:700;margin-bottom:2px;}.sc{font-size:8px;}.up{color:#4ade80;}.dn{color:#f87171;}.bl{color:#3b82f6;}.row{display:grid;grid-template-columns:3fr 2fr;gap:6px;}.panel{background:#161b27;border-radius:6px;padding:9px;}.pt{font-size:6px;letter-spacing:.7px;color:rgba(255,255,255,.28);text-transform:uppercase;margin-bottom:7px;}.chart{display:flex;align-items:flex-end;gap:3px;height:54px;}.bc{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}.bf{width:100%;border-radius:2px 2px 0 0;background:#3b82f6;cursor:pointer;transition:background .15s;animation:bg .6s cubic-bezier(.4,0,.2,1) both;}.bf:hover{background:#60a5fa;}.bc:nth-child(1) .bf{animation-delay:.05s}.bc:nth-child(2) .bf{animation-delay:.1s}.bc:nth-child(3) .bf{animation-delay:.15s}.bc:nth-child(4) .bf{animation-delay:.2s}.bc:nth-child(5) .bf{animation-delay:.25s}.bc:nth-child(6) .bf{animation-delay:.3s}.bc:nth-child(7) .bf{animation-delay:.35s}.dl{font-size:6px;color:rgba(255,255,255,.2);}.ur{display:flex;align-items:center;justify-content:space-between;padding:5px 3px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;border-radius:3px;transition:background .15s;animation:ri .3s ease both;}.ur:nth-child(1){animation-delay:.1s}.ur:nth-child(2){animation-delay:.16s}.ur:nth-child(3){animation-delay:.22s}.ur:nth-child(4){animation-delay:.28s}.ur:nth-child(5){animation-delay:.34s}.ur:last-child{border-bottom:none;}.ur:hover{background:rgba(255,255,255,.04);}.ui{display:flex;align-items:center;gap:6px;}.ua{width:20px;height:20px;border-radius:50%;background:#2d3748;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;}.un{font-size:10px;}.uro{font-size:8px;color:rgba(255,255,255,.3);}.pill{padding:2px 5px;border-radius:10px;font-size:7px;font-weight:600;}.pg{background:rgba(74,222,128,.12);color:#4ade80;}.pr{background:rgba(248,113,113,.12);color:#f87171;}.pb{background:rgba(59,130,246,.12);color:#3b82f6;}.search{background:#1e2433;border:1px solid rgba(255,255,255,.07);color:white;padding:4px 8px;border-radius:5px;font-size:10px;width:100%;margin-bottom:6px;outline:none;transition:border-color .2s,box-shadow .2s;}.search:focus{border-color:rgba(59,130,246,.5);box-shadow:0 0 0 2px rgba(59,130,246,.12);}.search::placeholder{color:rgba(255,255,255,.2);}.ld{display:inline-block;width:5px;height:5px;background:#3b82f6;border-radius:50%;margin-right:3px;}@keyframes lp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}.ld{animation:lp 1.5s ease-in-out infinite;}</style></head><body><div class="sb"><div class="sl">P</div><div class="si a">📊</div><div class="si">👥</div><div class="si">⚙️</div></div><div class="main"><div class="top"><h2>Dashboard</h2><div style="display:flex;gap:6px;align-items:center"><div class="nb">🔔</div><div class="av">GV</div></div></div><div class="c"><div class="stats"><div class="stat"><div class="sl2">Gebruikers</div><div class="sv">1,248</div><div class="sc up">↑ 12%</div></div><div class="stat"><div class="sl2">Sessies</div><div class="sv">3,891</div><div class="sc up">↑ 8%</div></div><div class="stat"><div class="sl2">Omzet</div><div class="sv">€9,240</div><div class="sc dn">↓ 3%</div></div><div class="stat"><div class="sl2">Actief nu</div><div class="sv bl"><span class="ld"></span><span id="live">47</span></div><div class="sc bl">live</div></div></div><div class="row"><div class="panel"><div class="pt">Bezoeken per dag</div><div class="chart" id="chart"></div></div><div class="panel"><div class="pt">Gebruikers</div><input class="search" placeholder="Zoeken..." id="srch"/><div id="users"></div></div></div></div></div><script>const days=['Ma','Di','Wo','Do','Vr','Za','Zo'],vals=[44,62,78,69,91,55,38],mx=Math.max(...vals);document.getElementById('chart').innerHTML=vals.map((v,i)=>'<div class="bc"><div class="bf" style="height:'+Math.round(v/mx*48)+'px"></div><div class="dl">'+days[i]+'</div></div>').join('');const au=[{i:'JK',n:'Jan Klaassen',r:'Admin',s:'actief'},{i:'LS',n:'Lisa Smit',r:'Editor',s:'inactief'},{i:'AM',n:'Anne Meijer',r:'Gebruiker',s:'actief'},{i:'RP',n:'Rob Peters',r:'Gebruiker',s:'actief'},{i:'SB',n:'Sara Berg',r:'Editor',s:'pending'}];function ru(l){document.getElementById('users').innerHTML=l.map(u=>'<div class="ur"><div class="ui"><div class="ua">'+u.i+'</div><div><div class="un">'+u.n+'</div><div class="uro">'+u.r+'</div></div></div><span class="pill '+(u.s==='actief'?'pg':u.s==='inactief'?'pr':'pb')+'">'+u.s+'</span></div>').join('');}document.getElementById('srch').addEventListener('input',function(){ru(au.filter(u=>u.n.toLowerCase().includes(this.value.toLowerCase())));});ru(au);setInterval(()=>{document.getElementById('live').textContent=44+Math.floor(Math.random()*10);},2000);<\/script></body></html>`
+  },
+  {
+    num:'04 / 05', meta:'2025 — Web App', title:'Grub\nRecepten App',
+    desc:'Grub is een full-stack recepten-app waarmee gebruikers hun favoriete recepten kunnen opslaan, filteren op ingrediënt en een weekmenu kunnen samenstellen. De frontend is gebouwd met vanilla JavaScript, de backend draait op Express met een MongoDB database.',
+    tags:['JavaScript','Node.js','Express','MongoDB','CSS'],
+    features:['Recepten toevoegen met ingrediënten, bereidingstijd en foto','Zoeken en filteren op ingrediënt of categorie','Weekmenu planner met drag-and-drop interface','Favorieten opslaan per gebruiker','REST API gebouwd met Express en Node.js','MongoDB database met Mongoose als ODM','Responsive card-layout met CSS Grid','Animaties bij toevoegen en verwijderen van recepten'],
+    visual:`<svg width="100%" height="100%" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect width="480" height="300" fill="#fdf8f3"/><rect x="0" y="0" width="480" height="50" fill="#1a1a1a"/><text x="22" y="30" font-family="Georgia,serif" font-size="16" fill="#f5a623" font-weight="bold" letter-spacing="1">Grub</text><text x="385" y="30" font-family="Arial" font-size="9" fill="rgba(255,255,255,0.4)">+ Recept</text><rect x="22" y="62" width="200" height="28" rx="14" fill="#f0ebe4" /><text x="42" y="81" font-family="Arial" font-size="9" fill="#aaa">🔍  Zoek op ingrediënt...</text><rect x="236" y="62" width="70" height="28" rx="14" fill="#1a1a1a"/><text x="271" y="81" font-family="Arial" font-size="9" fill="white" text-anchor="middle">Alles</text><rect x="312" y="62" width="70" height="28" rx="14" fill="#f0ebe4"/><text x="347" y="81" font-family="Arial" font-size="9" fill="#888" text-anchor="middle">Pasta</text><rect x="388" y="62" width="70" height="28" rx="14" fill="#f0ebe4"/><text x="423" y="81" font-family="Arial" font-size="9" fill="#888" text-anchor="middle">Soepen</text><rect x="22" y="104" width="134" height="120" rx="10" fill="white" filter="drop-shadow(0 2px 8px rgba(0,0,0,0.07))"/><rect x="22" y="104" width="134" height="60" rx="10" fill="#e8f5e9"/><text x="89" y="140" font-family="Arial" font-size="28" text-anchor="middle">🍝</text><text x="38" y="182" font-family="Arial" font-size="9" fill="#1a1a1a" font-weight="600">Spaghetti Bolognese</text><text x="38" y="195" font-family="Arial" font-size="7" fill="#aaa">⏱ 35 min · 4 personen</text><text x="38" y="214" font-family="Arial" font-size="7" fill="#f5a623">★★★★★</text><rect x="170" y="104" width="134" height="120" rx="10" fill="white" filter="drop-shadow(0 2px 8px rgba(0,0,0,0.07))"/><rect x="170" y="104" width="134" height="60" rx="10" fill="#fff3e0"/><text x="237" y="140" font-family="Arial" font-size="28" text-anchor="middle">🍜</text><text x="186" y="182" font-family="Arial" font-size="9" fill="#1a1a1a" font-weight="600">Thaise Currysoep</text><text x="186" y="195" font-family="Arial" font-size="7" fill="#aaa">⏱ 25 min · 2 personen</text><text x="186" y="214" font-family="Arial" font-size="7" fill="#f5a623">★★★★☆</text><rect x="318" y="104" width="140" height="120" rx="10" fill="white" filter="drop-shadow(0 2px 8px rgba(0,0,0,0.07))"/><rect x="318" y="104" width="140" height="60" rx="10" fill="#fce4ec"/><text x="388" y="140" font-family="Arial" font-size="28" text-anchor="middle">🥗</text><text x="334" y="182" font-family="Arial" font-size="9" fill="#1a1a1a" font-weight="600">Griekse Salade</text><text x="334" y="195" font-family="Arial" font-size="7" fill="#aaa">⏱ 10 min · 2 personen</text><text x="334" y="214" font-family="Arial" font-size="7" fill="#f5a623">★★★★★</text><rect x="22" y="238" width="436" height="1" fill="#f0ebe4"/><text x="22" y="256" font-family="Arial" font-size="8" fill="#ccc" letter-spacing="1">WEEKMENU</text><rect x="22" y="264" width="55" height="22" rx="4" fill="#1a1a1a"/><text x="49" y="279" font-family="Arial" font-size="7" fill="white" text-anchor="middle">Ma</text><rect x="84" y="264" width="55" height="22" rx="4" fill="#f5a623" opacity="0.2"/><text x="111" y="279" font-family="Arial" font-size="7" fill="#f5a623" text-anchor="middle">Di</text><rect x="146" y="264" width="55" height="22" rx="4" fill="#f0ebe4"/><text x="173" y="279" font-family="Arial" font-size="7" fill="#aaa" text-anchor="middle">Wo</text><rect x="208" y="264" width="55" height="22" rx="4" fill="#f0ebe4"/><text x="235" y="279" font-family="Arial" font-size="7" fill="#aaa" text-anchor="middle">Do</text></svg>`,
+    demo:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif;}body{background:#fdf8f3;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+.bar{background:#1a1a1a;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:8px;}
+.bar h1{font-size:14px;font-weight:700;color:#f5a623;letter-spacing:1px;white-space:nowrap;}
+.bar-right{display:flex;gap:6px;align-items:center;}
+.bar-search{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:white;padding:5px 10px;border-radius:20px;font-size:10px;outline:none;width:110px;}
+.bar-search::placeholder{color:rgba(255,255,255,.35);}
+.add-btn{background:#f5a623;color:#1a1a1a;border:none;padding:5px 12px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .2s;white-space:nowrap;}
+.add-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(245,166,35,.4);}
+.add-btn:active{transform:scale(.96);}
+.tabs{display:flex;background:#111;flex-shrink:0;}
+.tab{flex:1;padding:7px;font-size:10px;font-weight:600;color:rgba(255,255,255,.35);border:none;background:none;cursor:pointer;transition:color .2s,background .2s;}
+.tab.active{color:white;background:rgba(255,255,255,.07);}
+.view{display:none;flex:1;overflow:hidden;flex-direction:column;}
+.view.active{display:flex;}
+.filters{display:flex;gap:5px;padding:9px 12px 6px;flex-shrink:0;overflow-x:auto;}
+.chip{background:#f0ebe4;border:none;border-radius:20px;padding:4px 11px;font-size:9px;color:#888;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.chip:hover{transform:translateY(-1px);}
+.chip.active{background:#1a1a1a;color:white;}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:4px 12px 12px;overflow-y:auto;}
+@keyframes ci{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes fo{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.9)}}
+.card{background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:transform .2s,box-shadow .2s;animation:ci .3s ease both;position:relative;}
+.card:nth-child(1){animation-delay:.03s}.card:nth-child(2){animation-delay:.06s}.card:nth-child(3){animation-delay:.09s}.card:nth-child(4){animation-delay:.12s}.card:nth-child(5){animation-delay:.15s}.card:nth-child(6){animation-delay:.18s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1);}
+.card.removing{animation:fo .2s ease forwards;}
+.thumb{height:58px;display:flex;align-items:center;justify-content:center;font-size:26px;position:relative;}
+.del-btn{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.25);border:none;color:white;border-radius:50%;width:16px;height:16px;font-size:9px;cursor:pointer;opacity:0;transition:opacity .2s;display:flex;align-items:center;justify-content:center;line-height:1;}
+.card:hover .del-btn{opacity:1;}
+.del-btn:hover{background:rgba(229,57,53,.8);}
+.fav-btn{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.2);border:none;border-radius:50%;width:16px;height:16px;font-size:9px;cursor:pointer;opacity:0;transition:opacity .2s,transform .2s;}
+.card:hover .fav-btn{opacity:1;}
+.fav-btn:hover{transform:scale(1.2);}
+.info{padding:8px;}
+.r-name{font-weight:700;font-size:10px;color:#1a1a1a;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.r-meta{font-size:8px;color:#bbb;margin-bottom:5px;}
+.stars{font-size:9px;margin-bottom:5px;cursor:pointer;}
+.r-tags{display:flex;gap:3px;flex-wrap:wrap;}
+.r-tag{background:#f0ebe4;border-radius:10px;padding:2px 6px;font-size:7px;color:#888;}
+.week-view{padding:10px 12px;overflow-y:auto;flex:1;}
+.week-title{font-size:8px;letter-spacing:1.5px;color:#888;text-transform:uppercase;margin-bottom:8px;}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px;}
+.day-slot{background:white;border-radius:8px;padding:6px 4px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05);min-height:54px;cursor:pointer;transition:box-shadow .2s,transform .15s;border:1.5px solid transparent;}
+.day-slot:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.1);}
+.day-slot.has-recipe{border-color:#f5a623;}
+.day-name{font-size:7px;font-weight:600;color:#aaa;margin-bottom:3px;}
+.day-emoji{font-size:16px;}
+.day-recipe-name{font-size:6px;color:#888;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.day-add{font-size:16px;color:#ddd;}
+.pick-modal-inner{background:white;border-radius:14px;padding:16px;width:240px;max-height:300px;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.2);animation:su .25s cubic-bezier(.34,1.56,.64,1);}
+.pick-modal-inner h2{font-size:12px;margin-bottom:10px;}
+.pick-item{padding:7px 8px;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s;}
+.pick-item:hover{background:#fdf0e0;}
+.pick-icon{font-size:16px;}
+.pick-name{font-size:11px;color:#1a1a1a;}
+.favs-view{padding:10px 12px;overflow-y:auto;flex:1;}
+.empty{text-align:center;padding:28px;color:#bbb;font-size:11px;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(2px);}
+.modal.open{display:flex;}
+@keyframes su{from{transform:translateY(12px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.mbox{background:white;border-radius:14px;padding:16px;width:240px;box-shadow:0 16px 48px rgba(0,0,0,.2);animation:su .25s cubic-bezier(.34,1.56,.64,1);}
+.mbox h2{font-size:12px;font-weight:700;margin-bottom:10px;}
+.mbox input,.mbox select{width:100%;background:#f8f5f0;border:1px solid #ede8e1;border-radius:7px;padding:6px 9px;font-size:10px;margin-bottom:7px;outline:none;transition:border-color .2s;}
+.mbox input:focus,.mbox select:focus{border-color:#f5a623;}
+.mbtns{display:flex;gap:6px;}
+.mbtns button{flex:1;padding:7px;border-radius:7px;border:none;cursor:pointer;font-size:10px;font-weight:700;transition:transform .15s;}
+.bc{background:#f0ebe4;color:#666;}.bc:hover{transform:translateY(-1px);}
+.ba{background:#f5a623;color:#1a1a1a;}.ba:hover{transform:translateY(-1px);}
+.mbtns button:active{transform:scale(.96);}
+.toast{position:fixed;bottom:12px;left:50%;transform:translateX(-50%) translateY(50px);background:#1a1a1a;color:white;padding:7px 16px;border-radius:20px;font-size:10px;font-weight:700;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .3s;pointer-events:none;opacity:0;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+</style></head><body>
+<div class="bar">
+  <h1>Grub</h1>
+  <div class="bar-right">
+    <input class="bar-search" id="srch" placeholder="🔍 Zoeken..."/>
+    <button class="add-btn" id="addBtn">+ Recept</button>
+  </div>
+</div>
+<div class="tabs">
+  <button class="tab active" data-tab="all">🍽️ Alle</button>
+  <button class="tab" data-tab="favs">❤️ Favorieten</button>
+  <button class="tab" data-tab="week">📅 Weekmenu</button>
+</div>
+<div class="view active" id="view-all">
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+</div>
+<div class="view" id="view-favs"><div class="favs-view"><div class="grid" id="fav-grid"></div></div></div>
+<div class="view" id="view-week"><div class="week-view"><div class="week-title">Jouw weekmenu</div><div class="week-grid" id="week-grid"></div><div class="week-title">Boodschappenlijst</div><div id="shopping-list"></div></div></div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="addModal">
+  <div class="mbox">
+    <h2>Nieuw recept</h2>
+    <input id="rn" placeholder="Naam (bijv. Spaghetti)"/>
+    <input id="ri" placeholder="Hoofdingrediënt"/>
+    <select id="rc"><option value="Pasta">🍝 Pasta</option><option value="Soepen">🍲 Soepen</option><option value="Salades">🥗 Salades</option><option value="Vlees">🍗 Vlees</option><option value="Vegetarisch">🥦 Vegetarisch</option></select>
+    <input id="rt" placeholder="Bereidingstijd (bijv. 30 min)"/>
+    <div class="mbtns"><button class="bc" id="cancelAdd">Annuleer</button><button class="ba" id="saveAdd">Toevoegen</button></div>
+  </div>
+</div>
+<div class="modal" id="pickModal">
+  <div class="pick-modal-inner">
+    <h2>Kies recept voor <span id="pickDay"></span></h2>
+    <div id="pick-list"></div>
+    <div style="margin-top:8px"><button class="bc" style="width:100%;padding:7px;border-radius:7px;border:none;cursor:pointer;font-size:10px;font-weight:700;" id="clearDay">🗑️ Verwijder dag</button></div>
+  </div>
+</div>
+<script>
+const cats=['Alles','Pasta','Soepen','Salades','Vlees','Vegetarisch'];
+const icons={Pasta:'🍝',Soepen:'🍲',Salades:'🥗',Vlees:'🍗',Vegetarisch:'🥦'};
+const colors={Pasta:'#e8f5e9',Soepen:'#fff3e0',Salades:'#fce4ec',Vlees:'#f3e5f5',Vegetarisch:'#e0f7fa'};
+const days=['Ma','Di','Wo','Do','Vr','Za','Zo'];
+let active='Alles';
+let recipes=[
+  {name:'Spaghetti Bolognese',cat:'Pasta',time:'35 min',ing:'gehakt',stars:5,fav:true},
+  {name:'Thaise Currysoep',cat:'Soepen',time:'25 min',ing:'kokosmelk',stars:4,fav:false},
+  {name:'Griekse Salade',cat:'Salades',time:'10 min',ing:'feta',stars:5,fav:true},
+  {name:'Chicken Stir-fry',cat:'Vlees',time:'20 min',ing:'kip',stars:4,fav:false},
+  {name:'Tomatensoep',cat:'Soepen',time:'30 min',ing:'tomaat',stars:3,fav:false},
+  {name:'Pasta Pesto',cat:'Pasta',time:'15 min',ing:'pesto',stars:4,fav:true}
+];
+let weekMenu={Ma:null,Di:null,Wo:null,Do:null,Vr:null,Za:null,Zo:null};
+let pickingDay=null;
+
+// filters
+const fDiv=document.getElementById('filters');
+fDiv.innerHTML=cats.map(c=>'<button class="chip'+(c==='Alles'?' active':'')+'" data-c="'+c+'">'+c+'</button>').join('');
+fDiv.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;active=b.dataset.c;document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x.dataset.c===active));render();});
+
+function makeCard(r,i,showDel=true){
+  const ri=recipes.indexOf(r);
+  return'<div class="card" id="rc'+ri+'"><div class="thumb" style="background:'+(colors[r.cat]||'#f0ebe4')+'">'+(icons[r.cat]||'🍽️')+'<button class="fav-btn" data-ri="'+ri+'">'+(r.fav?'❤️':'🤍')+'</button>'+(showDel?'<button class="del-btn" data-di="'+ri+'">✕</button>':'')+'</div><div class="info"><div class="r-name">'+r.name+'</div><div class="r-meta">⏱ '+r.time+'</div><div class="stars" data-ri="'+ri+'">'+'★'.repeat(r.stars)+'☆'.repeat(5-r.stars)+'</div><div class="r-tags"><span class="r-tag">'+r.cat+'</span><span class="r-tag">'+r.ing+'</span></div></div></div>';
+}
+
+function render(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  const list=recipes.filter(r=>(active==='Alles'||r.cat===active)&&(r.name.toLowerCase().includes(q)||r.ing.toLowerCase().includes(q)));
+  document.getElementById('grid').innerHTML=list.length?list.map(r=>makeCard(r)).join(''):'<div class="empty">Geen recepten gevonden.</div>';
+  renderFavs();
+  renderWeek();
+}
+
+function renderFavs(){
+  const favs=recipes.filter(r=>r.fav);
+  document.getElementById('fav-grid').innerHTML=favs.length?favs.map(r=>makeCard(r,0,false)).join(''):'<div class="empty">Nog geen favorieten. Klik ❤️ op een kaart!</div>';
+}
+
+function renderWeek(){
+  document.getElementById('week-grid').innerHTML=days.map(d=>{
+    const r=weekMenu[d];
+    return'<div class="day-slot'+(r?' has-recipe':'')+'" data-day="'+d+'"><div class="day-name">'+d+'</div>'+(r?'<div class="day-emoji">'+(icons[r.cat]||'🍽️')+'</div><div class="day-recipe-name">'+r.name+'</div>':'<div class="day-add">+</div>')+'</div>';
+  }).join('');
+  // shopping list
+  const assigned=days.filter(d=>weekMenu[d]).map(d=>weekMenu[d]);
+  document.getElementById('shopping-list').innerHTML=assigned.length
+    ?assigned.map(r=>'<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0ebe4;"><span style="font-size:14px">'+(icons[r.cat]||'🍽️')+'</span><div><div style="font-size:10px;font-weight:600;color:#1a1a1a">'+r.name+'</div><div style="font-size:8px;color:#bbb">'+r.ing+' · '+r.time+'</div></div></div>').join('')
+    :'<div class="empty">Voeg recepten toe aan je weekmenu!</div>';
+}
+
+// grid events
+function bindGridEvents(el){
+  el.addEventListener('click',function(e){
+    const db=e.target.closest('.del-btn');
+    if(db){const i=+db.dataset.di;const c=document.getElementById('rc'+i);if(c){c.classList.add('removing');setTimeout(()=>{recipes.splice(i,1);render();toast('🗑️ Recept verwijderd');},200);}return;}
+    const fb=e.target.closest('.fav-btn');
+    if(fb){const i=+fb.dataset.ri;recipes[i].fav=!recipes[i].fav;render();toast(recipes[i].fav?'❤️ Toegevoegd aan favorieten':'Verwijderd uit favorieten');return;}
+    const sb=e.target.closest('.stars');
+    if(sb){
+      const i=+sb.dataset.ri;
+      const rect=sb.getBoundingClientRect();
+      const pct=(e.clientX-rect.left)/rect.width;
+      recipes[i].stars=Math.max(1,Math.round(pct*5));
+      render();toast('⭐ Beoordeling opgeslagen');return;
+    }
+  });
+}
+bindGridEvents(document.getElementById('grid'));
+bindGridEvents(document.getElementById('fav-grid'));
+
+// week events
+document.getElementById('week-grid').addEventListener('click',function(e){
+  const slot=e.target.closest('.day-slot');if(!slot)return;
+  pickingDay=slot.dataset.day;
+  document.getElementById('pickDay').textContent=pickingDay;
+  document.getElementById('pick-list').innerHTML=recipes.map((r,i)=>'<div class="pick-item" data-ri="'+i+'"><span class="pick-icon">'+(icons[r.cat]||'🍽️')+'</span><span class="pick-name">'+r.name+'</span></div>').join('');
+  document.getElementById('pickModal').classList.add('open');
+});
+document.getElementById('pick-list').addEventListener('click',function(e){
+  const item=e.target.closest('.pick-item');if(!item)return;
+  weekMenu[pickingDay]=recipes[+item.dataset.ri];
+  document.getElementById('pickModal').classList.remove('open');
+  renderWeek();toast('📅 '+recipes[+item.dataset.ri].name+' ingepland voor '+pickingDay);
+});
+document.getElementById('clearDay').addEventListener('click',function(){
+  weekMenu[pickingDay]=null;
+  document.getElementById('pickModal').classList.remove('open');
+  renderWeek();toast('🗑️ '+pickingDay+' geleegd');
+});
+document.addEventListener('click',e=>{if(e.target===document.getElementById('pickModal'))document.getElementById('pickModal').classList.remove('open');});
+
+// tabs
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',function(){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');
+  document.getElementById('view-'+this.dataset.tab).classList.add('active');
+  if(this.dataset.tab==='favs')renderFavs();
+  if(this.dataset.tab==='week')renderWeek();
+}));
+
+// search
+document.getElementById('srch').addEventListener('input',render);
+
+// add modal
+document.getElementById('addBtn').addEventListener('click',()=>document.getElementById('addModal').classList.add('open'));
+document.getElementById('cancelAdd').addEventListener('click',()=>document.getElementById('addModal').classList.remove('open'));
+document.getElementById('saveAdd').addEventListener('click',function(){
+  const n=document.getElementById('rn').value.trim();if(!n)return;
+  const cat=document.getElementById('rc').value;
+  recipes.unshift({name:n,cat,time:document.getElementById('rt').value||'? min',ing:document.getElementById('ri').value||'div',stars:4,fav:false});
+  render();document.getElementById('addModal').classList.remove('open');
+  ['rn','ri','rt'].forEach(id=>document.getElementById(id).value='');
+  toast('✅ '+n+' toegevoegd!');
+});
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+render();
+<\/script></body></html>`
+  },
+  {
+    num:'05 / 05', meta:'2024 — UI Design', title:'Yonder\nBioscoop App',
+    desc:'Yonder is een UX/UI ontwerp voor een democratische bioscoop-app waarbij bezoekers stemmen op welke film er die avond gedraaid wordt. Het volledige concept is uitgewerkt in Figma, inclusief FO (functioneel ontwerp), TO (technisch ontwerp) en GO (grafisch ontwerp) documentatie.',
+    tags:['Figma','UX Design','Prototyping','User Research'],
+    features:['Volledig interactief Figma prototype met navigatie en animaties','FO documentatie met user stories en wireframes','TO documentatie met datamodel en systeemarchitectuur','GO met stijlgids, kleurpalet en typografie','Stemmen-systeem waarbij film met meeste stemmen wint','Ticketreservering flow inclusief stoelkeuze','Gebruikersonderzoek met 5 testsessies verwerkt in iteraties','Responsive ontwerp voor zowel mobiel als tablet'],
+    visual:`<svg width="100%" height="100%" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect width="480" height="300" fill="#0d0d14"/><rect x="0" y="0" width="480" height="48" fill="#08080f"/><text x="22" y="30" font-family="Georgia,serif" font-size="15" fill="white" font-weight="bold" letter-spacing="2">YONDER</text><text x="380" y="30" font-family="Arial" font-size="9" fill="rgba(255,255,255,0.3)">Stem · Reserveer</text><circle cx="455" cy="24" r="9" fill="#7c3aed" opacity=".8"/><text x="455" y="28" font-family="Arial" font-size="8" text-anchor="middle" fill="white">GV</text><text x="22" y="68" font-family="Arial" font-size="8" fill="rgba(255,255,255,0.25)" letter-spacing="1.5">STEM OP VANAVOND</text><rect x="22" y="76" width="210" height="130" rx="10" fill="#1a1a2e" stroke="rgba(124,58,237,0.5)" stroke-width="1.5"/><rect x="22" y="76" width="210" height="75" rx="10" fill="#2d1f3d"/><text x="127" y="120" font-family="Arial" font-size="36" text-anchor="middle">🎬</text><rect x="22" y="140" width="210" height="66" rx="0" fill="#1a1a2e"/><rect x="22" y="196" width="210" height="10" rx="0 0 10 10" fill="#1a1a2e"/><text x="38" y="158" font-family="Arial" font-size="10" fill="white" font-weight="bold">Dune: Part Two</text><text x="38" y="171" font-family="Arial" font-size="8" fill="rgba(255,255,255,0.4)">Sci-Fi · 166 min</text><rect x="38" y="178" width="120" height="4" rx="2" fill="rgba(255,255,255,0.1)"/><rect x="38" y="178" width="84" height="4" rx="2" fill="#7c3aed"/><text x="168" y="184" font-family="Arial" font-size="8" fill="#7c3aed">70%</text><rect x="248" y="76" width="210" height="130" rx="10" fill="#1a1a2e"/><rect x="248" y="76" width="210" height="75" rx="10" fill="#1f2d3d"/><text x="353" y="120" font-family="Arial" font-size="36" text-anchor="middle">🚀</text><text x="264" y="158" font-family="Arial" font-size="10" fill="white" font-weight="bold">Oppenheimer</text><text x="264" y="171" font-family="Arial" font-size="8" fill="rgba(255,255,255,0.4)">Drama · 180 min</text><rect x="264" y="178" width="120" height="4" rx="2" fill="rgba(255,255,255,0.1)"/><rect x="264" y="178" width="36" height="4" rx="2" fill="#06b6d4"/><text x="394" y="184" font-family="Arial" font-size="8" fill="#06b6d4">30%</text><rect x="22" y="220" width="436" height="38" rx="8" fill="#1a1a2e"/><text x="56" y="238" font-family="Arial" font-size="8" fill="rgba(255,255,255,0.3)">🪑 Rij C · Stoel 12</text><text x="56" y="251" font-family="Arial" font-size="7" fill="rgba(255,255,255,0.2)">Ticket gereserveerd</text><rect x="370" y="224" width="70" height="26" rx="13" fill="#7c3aed"/><text x="405" y="241" font-family="Arial" font-size="9" text-anchor="middle" fill="white" font-weight="bold">Check-in</text><circle cx="38" cy="244" r="12" fill="#7c3aed" opacity=".15"/><text x="38" y="249" font-family="Arial" font-size="12" text-anchor="middle">🎟️</text></svg>`,
+    demo:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif;}body{background:#0d0d14;color:white;height:100vh;display:flex;flex-direction:column;overflow:hidden;}.bar{background:#08080f;padding:11px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);}.logo{font-size:14px;font-weight:700;letter-spacing:2px;}.user{width:26px;height:26px;background:#7c3aed;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;}.tabs{display:flex;background:#0a0a10;flex-shrink:0;}.tab{flex:1;padding:8px;font-size:10px;font-weight:600;color:rgba(255,255,255,.3);border:none;background:none;cursor:pointer;transition:color .2s,background .2s;}.tab.active{color:white;background:rgba(255,255,255,.07);}.view{display:none;flex:1;overflow-y:auto;padding:12px;flex-direction:column;}.view.active{display:flex;}.sec-label{font-size:7px;letter-spacing:2px;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:10px;}.films{display:grid;grid-template-columns:1fr 1fr;gap:8px;}@keyframes ci{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.film{background:#1a1a2e;border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;border:1.5px solid transparent;animation:ci .3s ease both;}.film:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}.film.voted{border-color:#7c3aed;}.thumb{height:72px;display:flex;align-items:center;justify-content:center;font-size:32px;}.film-info{padding:10px;}.film-name{font-size:11px;font-weight:600;margin-bottom:2px;}.film-genre{font-size:8px;color:rgba(255,255,255,.3);margin-bottom:8px;}.vbar-bg{background:rgba(255,255,255,.08);border-radius:4px;height:4px;margin-bottom:5px;}.vbar{height:100%;border-radius:4px;transition:width .5s ease;}.vrow{display:flex;justify-content:space-between;align-items:center;}.vpct{font-size:8px;color:rgba(255,255,255,.4);}.vbtn{background:#7c3aed;border:none;color:white;padding:4px 10px;border-radius:10px;font-size:8px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s;}.vbtn:hover{transform:scale(1.06);box-shadow:0 3px 10px rgba(124,58,237,.4);}.vbtn.done{background:#06b6d4;}.seat-sec{background:#1a1a2e;border-radius:10px;padding:12px;}.screen{background:rgba(255,255,255,.06);border-radius:4px;height:6px;margin-bottom:12px;text-align:center;font-size:6px;color:rgba(255,255,255,.2);letter-spacing:2px;line-height:6px;}.rows{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}.row-seats{display:flex;gap:4px;align-items:center;}.rl{font-size:7px;color:rgba(255,255,255,.2);width:10px;flex-shrink:0;}.seat{width:16px;height:16px;border-radius:3px;cursor:pointer;transition:transform .15s,box-shadow .15s;font-size:8px;display:flex;align-items:center;justify-content:center;}.seat.free{background:rgba(255,255,255,.1);}.seat.free:hover{transform:scale(1.15);box-shadow:0 0 0 2px #7c3aed;}.seat.taken{background:rgba(255,255,255,.04);cursor:not-allowed;}.seat.selected{background:#7c3aed;transform:scale(1.1);}.seat.gap{width:8px;background:transparent;cursor:default;}.res-btn{width:100%;background:#7c3aed;border:none;color:white;padding:10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .2s,opacity .2s;}.res-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(124,58,237,.4);}.res-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}.prog-item{background:#1a1a2e;border-radius:10px;padding:12px;margin-bottom:8px;}.prog-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}.prog-icon{font-size:22px;}.prog-name{font-size:11px;font-weight:600;}.prog-time{font-size:8px;color:rgba(255,255,255,.3);}.prog-desc{font-size:9px;color:rgba(255,255,255,.3);line-height:1.5;margin-bottom:6px;}.prog-tag{display:inline-block;background:rgba(124,58,237,.2);color:#a78bfa;border-radius:10px;padding:2px 8px;font-size:8px;}.toast{position:fixed;bottom:12px;left:50%;transform:translateX(-50%) translateY(50px);background:#7c3aed;color:white;padding:8px 18px;border-radius:20px;font-size:10px;font-weight:700;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .3s;pointer-events:none;opacity:0;}.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}</style></head><body><div class="bar"><span class="logo">YONDER</span><div class="user">GV</div></div><div class="tabs"><button class="tab active" data-tab="vote">🗳️ Stem</button><button class="tab" data-tab="seat">🪑 Stoelen</button><button class="tab" data-tab="prog">🎬 Programma</button></div><div class="view active" id="view-vote"><div class="sec-label">Stem op vanavond</div><div class="films" id="films"></div></div><div class="view" id="view-seat"><div class="sec-label">Kies je stoel</div><div class="seat-sec"><div class="screen">SCHERM</div><div class="rows" id="seats"></div><button class="res-btn" id="resBtn" disabled>Selecteer een stoel</button></div></div><div class="view" id="view-prog"><div class="sec-label">Komende week</div><div id="prog"></div></div><div class="toast" id="toast"></div><script>const films=[{name:'Dune: Part Two',icon:'🎬',genre:'Sci-Fi · 166 min',votes:14,color:'#7c3aed'},{name:'Oppenheimer',icon:'💣',genre:'Drama · 180 min',votes:6,color:'#06b6d4'},{name:'Poor Things',icon:'🎭',genre:'Fantasy · 141 min',votes:4,color:'#f59e0b'},{name:'Zone of Interest',icon:'🏡',genre:'Drama · 106 min',votes:2,color:'#10b981'}];let myVote=null,mySeat=null;const total=()=>films.reduce((a,b)=>a+b.votes,0);function renderFilms(){document.getElementById('films').innerHTML=films.map((f,i)=>{const pct=Math.round(f.votes/total()*100);return'<div class="film'+(myVote===i?' voted':'')+'"><div class="thumb" style="background:'+f.color+'22">'+f.icon+'</div><div class="film-info"><div class="film-name">'+f.name+'</div><div class="film-genre">'+f.genre+'</div><div class="vbar-bg"><div class="vbar" style="width:'+pct+'%;background:'+f.color+'"></div></div><div class="vrow"><span class="vpct">'+pct+'% ('+f.votes+')</span><button class="vbtn'+(myVote===i?' done':'')+'" data-i="'+i+'">'+(myVote===i?'✓ Gestemd':'Stem')+'</button></div></div></div>';}).join('');}document.getElementById('films').addEventListener('click',function(e){const btn=e.target.closest('.vbtn');if(!btn||btn.classList.contains('done'))return;const i=+btn.dataset.i;if(myVote!==null)films[myVote].votes--;films[i].votes++;myVote=i;renderFilms();toast('🗳️ Gestemd op '+films[i].name);});const layout=[['A',0,0,0,1,0,0,0],['B',0,0,0,0,0,0,0],['C',0,0,1,0,0,1,0],['D',0,0,0,0,0,0,0]];function renderSeats(){document.getElementById('seats').innerHTML=layout.map(row=>{const label=row[0],seats=row.slice(1);return'<div class="row-seats"><span class="rl">'+label+'</span>'+seats.map((taken,j)=>{if(j===3)return'<div class="seat gap"></div>';const id=label+(j+1),sel=mySeat===id;return'<div class="seat '+(taken?'taken':sel?'selected':'free')+'" data-id="'+id+'">'+(taken?'':sel?'✓':'')+'</div>';}).join('')+'</div>';}).join('');}document.getElementById('seats').addEventListener('click',function(e){const s=e.target.closest('.seat.free,.seat.selected');if(!s)return;mySeat=mySeat===s.dataset.id?null:s.dataset.id;renderSeats();const btn=document.getElementById('resBtn');if(mySeat){btn.disabled=false;btn.textContent='Reserveer stoel '+mySeat;}else{btn.disabled=true;btn.textContent='Selecteer een stoel';}});document.getElementById('resBtn').addEventListener('click',function(){if(!mySeat)return;toast('🎟️ Stoel '+mySeat+' gereserveerd!');mySeat=null;renderSeats();this.disabled=true;this.textContent='Selecteer een stoel';});const program=[{icon:'🎬',name:'Dune: Part Two',time:'Maandag 20:00',genre:'Sci-Fi',desc:'Een episch avontuur over Paul Atreides en zijn strijd op Arrakis.'},{icon:'🎭',name:'Poor Things',time:'Dinsdag 19:30',genre:'Fantasy',desc:'Een bizarre fantasy van Yorgos Lanthimos met een ijzersterke cast.'},{icon:'💣',name:'Oppenheimer',time:'Woensdag 20:30',genre:'Drama',desc:'De biografie van de vader van de atoombom door Christopher Nolan.'},{icon:'🕵️',name:'Anatomy of a Fall',time:'Donderdag 20:00',genre:'Thriller',desc:'Een Franse thriller over een vrouw verdacht van de dood van haar man.'}];document.getElementById('prog').innerHTML=program.map(p=>'<div class="prog-item"><div class="prog-head"><span class="prog-icon">'+p.icon+'</span><div><div class="prog-name">'+p.name+'</div><div class="prog-time">'+p.time+'</div></div></div><div class="prog-desc">'+p.desc+'</div><span class="prog-tag">'+p.genre+'</span></div>').join('');document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));this.classList.add('active');document.getElementById('view-'+this.dataset.tab).classList.add('active');if(this.dataset.tab==='seat')renderSeats();}));function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}renderFilms();renderSeats();<\/script></body></html>`
+  }
+];
+
+/* ─── NAVIGATION ─── */
+document.getElementById('view-landing').addEventListener('click', enterPortfolio);
+
+document.getElementById('back-btn').addEventListener('click', backToLanding);
+
+document.getElementById('ov-back').addEventListener('click', closeOverlay);
+
+document.getElementById('demo-btn').addEventListener('click', toggleDemo);
+
+document.querySelectorAll('.proj').forEach(el => {
+  el.addEventListener('click', () => openOverlay(+el.dataset.i));
+});
+
+function enterPortfolio() {
+  document.getElementById('view-landing').classList.add('hidden');
+  document.getElementById('view-portfolio').classList.add('visible');
+  document.getElementById('back-btn').classList.add('show');
+}
+
+function backToLanding() {
+  document.getElementById('view-landing').classList.remove('hidden');
+  document.getElementById('view-portfolio').classList.remove('visible');
+  document.getElementById('back-btn').classList.remove('show');
+  closeOverlay();
+}
+
+/* ─── OVERLAY ─── */
+let current = 0;
+let demoOn = false;
+
+function openOverlay(i) {
+  current = i;
+  demoOn = false;
+  const p = projects[i];
+
+  document.getElementById('ov-num').textContent = p.num;
+  document.getElementById('ov-meta').textContent = p.meta;
+  document.getElementById('ov-title').innerHTML = p.title.replace('\n','<br>');
+  document.getElementById('ov-desc').textContent = p.desc;
+  document.getElementById('ov-tags').innerHTML = p.tags.map(t=>`<span class="ov-tag">${t}</span>`).join('');
+  document.getElementById('ov-features').innerHTML = p.features.map(f=>`<li>${f}</li>`).join('');
+  document.getElementById('ov-preview').innerHTML = p.visual;
+  document.getElementById('ov-preview').style.display = 'block';
+  document.getElementById('ov-demo').style.display = 'none';
+  document.getElementById('ov-demo').src = '';
+  document.getElementById('demo-btn').textContent = '▶ Demo';
+  document.getElementById('demo-btn').classList.remove('active');
+
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('open');
+  setTimeout(() => {
+    document.getElementById('ov-demo').src = '';
+    document.getElementById('ov-demo').style.display = 'none';
+    document.getElementById('ov-preview').style.display = 'block';
+    document.getElementById('demo-btn').textContent = '▶ Demo';
+    document.getElementById('demo-btn').classList.remove('active');
+    demoOn = false;
+  }, 320);
+}
+
+function toggleDemo() {
+  if (demoOn) {
+    demoOn = false;
+    document.getElementById('ov-demo').src = '';
+    document.getElementById('ov-demo').style.display = 'none';
+    document.getElementById('ov-preview').style.display = 'block';
+    document.getElementById('demo-btn').textContent = '▶ Demo';
+    document.getElementById('demo-btn').classList.remove('active');
+  } else {
+    demoOn = true;
+    const blob = new Blob([projects[current].demo], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const frame = document.getElementById('ov-demo');
+    frame.src = url;
+    frame.style.display = 'block';
+    document.getElementById('ov-preview').style.display = 'none';
+    document.getElementById('demo-btn').textContent = '✕ Sluit demo';
+    document.getElementById('demo-btn').classList.add('active');
+    frame.onload = () => URL.revokeObjectURL(url);
+  }
+}
+</script>
+</body>
+</html>
